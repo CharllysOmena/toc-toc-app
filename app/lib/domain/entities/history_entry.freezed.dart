@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$HistoryEntry {
 
- DateTime get date; bool get confirmed; DateTime? get confirmedAt;
+ DateTime get date; bool get confirmed; DateTime? get confirmedAt; String? get photoPath;
 /// Create a copy of HistoryEntry
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $HistoryEntryCopyWith<HistoryEntry> get copyWith => _$HistoryEntryCopyWithImpl<H
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is HistoryEntry&&(identical(other.date, date) || other.date == date)&&(identical(other.confirmed, confirmed) || other.confirmed == confirmed)&&(identical(other.confirmedAt, confirmedAt) || other.confirmedAt == confirmedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is HistoryEntry&&(identical(other.date, date) || other.date == date)&&(identical(other.confirmed, confirmed) || other.confirmed == confirmed)&&(identical(other.confirmedAt, confirmedAt) || other.confirmedAt == confirmedAt)&&(identical(other.photoPath, photoPath) || other.photoPath == photoPath));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,date,confirmed,confirmedAt);
+int get hashCode => Object.hash(runtimeType,date,confirmed,confirmedAt,photoPath);
 
 @override
 String toString() {
-  return 'HistoryEntry(date: $date, confirmed: $confirmed, confirmedAt: $confirmedAt)';
+  return 'HistoryEntry(date: $date, confirmed: $confirmed, confirmedAt: $confirmedAt, photoPath: $photoPath)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $HistoryEntryCopyWith<$Res>  {
   factory $HistoryEntryCopyWith(HistoryEntry value, $Res Function(HistoryEntry) _then) = _$HistoryEntryCopyWithImpl;
 @useResult
 $Res call({
- DateTime date, bool confirmed, DateTime? confirmedAt
+ DateTime date, bool confirmed, DateTime? confirmedAt, String? photoPath
 });
 
 
@@ -65,12 +65,13 @@ class _$HistoryEntryCopyWithImpl<$Res>
 
 /// Create a copy of HistoryEntry
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? date = null,Object? confirmed = null,Object? confirmedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? date = null,Object? confirmed = null,Object? confirmedAt = freezed,Object? photoPath = freezed,}) {
   return _then(_self.copyWith(
 date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
 as DateTime,confirmed: null == confirmed ? _self.confirmed : confirmed // ignore: cast_nullable_to_non_nullable
 as bool,confirmedAt: freezed == confirmedAt ? _self.confirmedAt : confirmedAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,photoPath: freezed == photoPath ? _self.photoPath : photoPath // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -155,10 +156,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( DateTime date,  bool confirmed,  DateTime? confirmedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( DateTime date,  bool confirmed,  DateTime? confirmedAt,  String? photoPath)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _HistoryEntry() when $default != null:
-return $default(_that.date,_that.confirmed,_that.confirmedAt);case _:
+return $default(_that.date,_that.confirmed,_that.confirmedAt,_that.photoPath);case _:
   return orElse();
 
 }
@@ -176,10 +177,10 @@ return $default(_that.date,_that.confirmed,_that.confirmedAt);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( DateTime date,  bool confirmed,  DateTime? confirmedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( DateTime date,  bool confirmed,  DateTime? confirmedAt,  String? photoPath)  $default,) {final _that = this;
 switch (_that) {
 case _HistoryEntry():
-return $default(_that.date,_that.confirmed,_that.confirmedAt);case _:
+return $default(_that.date,_that.confirmed,_that.confirmedAt,_that.photoPath);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +197,10 @@ return $default(_that.date,_that.confirmed,_that.confirmedAt);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( DateTime date,  bool confirmed,  DateTime? confirmedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( DateTime date,  bool confirmed,  DateTime? confirmedAt,  String? photoPath)?  $default,) {final _that = this;
 switch (_that) {
 case _HistoryEntry() when $default != null:
-return $default(_that.date,_that.confirmed,_that.confirmedAt);case _:
+return $default(_that.date,_that.confirmed,_that.confirmedAt,_that.photoPath);case _:
   return null;
 
 }
@@ -211,12 +212,13 @@ return $default(_that.date,_that.confirmed,_that.confirmedAt);case _:
 @JsonSerializable()
 
 class _HistoryEntry implements HistoryEntry {
-  const _HistoryEntry({required this.date, required this.confirmed, this.confirmedAt});
+  const _HistoryEntry({required this.date, required this.confirmed, this.confirmedAt, this.photoPath});
   factory _HistoryEntry.fromJson(Map<String, dynamic> json) => _$HistoryEntryFromJson(json);
 
 @override final  DateTime date;
 @override final  bool confirmed;
 @override final  DateTime? confirmedAt;
+@override final  String? photoPath;
 
 /// Create a copy of HistoryEntry
 /// with the given fields replaced by the non-null parameter values.
@@ -231,16 +233,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HistoryEntry&&(identical(other.date, date) || other.date == date)&&(identical(other.confirmed, confirmed) || other.confirmed == confirmed)&&(identical(other.confirmedAt, confirmedAt) || other.confirmedAt == confirmedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HistoryEntry&&(identical(other.date, date) || other.date == date)&&(identical(other.confirmed, confirmed) || other.confirmed == confirmed)&&(identical(other.confirmedAt, confirmedAt) || other.confirmedAt == confirmedAt)&&(identical(other.photoPath, photoPath) || other.photoPath == photoPath));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,date,confirmed,confirmedAt);
+int get hashCode => Object.hash(runtimeType,date,confirmed,confirmedAt,photoPath);
 
 @override
 String toString() {
-  return 'HistoryEntry(date: $date, confirmed: $confirmed, confirmedAt: $confirmedAt)';
+  return 'HistoryEntry(date: $date, confirmed: $confirmed, confirmedAt: $confirmedAt, photoPath: $photoPath)';
 }
 
 
@@ -251,7 +253,7 @@ abstract mixin class _$HistoryEntryCopyWith<$Res> implements $HistoryEntryCopyWi
   factory _$HistoryEntryCopyWith(_HistoryEntry value, $Res Function(_HistoryEntry) _then) = __$HistoryEntryCopyWithImpl;
 @override @useResult
 $Res call({
- DateTime date, bool confirmed, DateTime? confirmedAt
+ DateTime date, bool confirmed, DateTime? confirmedAt, String? photoPath
 });
 
 
@@ -268,12 +270,13 @@ class __$HistoryEntryCopyWithImpl<$Res>
 
 /// Create a copy of HistoryEntry
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? date = null,Object? confirmed = null,Object? confirmedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? date = null,Object? confirmed = null,Object? confirmedAt = freezed,Object? photoPath = freezed,}) {
   return _then(_HistoryEntry(
 date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
 as DateTime,confirmed: null == confirmed ? _self.confirmed : confirmed // ignore: cast_nullable_to_non_nullable
 as bool,confirmedAt: freezed == confirmedAt ? _self.confirmedAt : confirmedAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,photoPath: freezed == photoPath ? _self.photoPath : photoPath // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

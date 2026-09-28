@@ -55,13 +55,13 @@ extension ChecklistStatePatterns on ChecklistState {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Loading value)?  loading,TResult Function( _Ready value)?  ready,TResult Function( _Saving value)?  saving,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Loading value)?  loading,TResult Function( _Ready value)?  ready,TResult Function( _Error value)?  error,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Loading() when loading != null:
 return loading(_that);case _Ready() when ready != null:
-return ready(_that);case _Saving() when saving != null:
-return saving(_that);case _:
+return ready(_that);case _Error() when error != null:
+return error(_that);case _:
   return orElse();
 
 }
@@ -79,13 +79,13 @@ return saving(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Loading value)  loading,required TResult Function( _Ready value)  ready,required TResult Function( _Saving value)  saving,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Loading value)  loading,required TResult Function( _Ready value)  ready,required TResult Function( _Error value)  error,}){
 final _that = this;
 switch (_that) {
 case _Loading():
 return loading(_that);case _Ready():
-return ready(_that);case _Saving():
-return saving(_that);case _:
+return ready(_that);case _Error():
+return error(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -102,13 +102,13 @@ return saving(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Loading value)?  loading,TResult? Function( _Ready value)?  ready,TResult? Function( _Saving value)?  saving,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Loading value)?  loading,TResult? Function( _Ready value)?  ready,TResult? Function( _Error value)?  error,}){
 final _that = this;
 switch (_that) {
 case _Loading() when loading != null:
 return loading(_that);case _Ready() when ready != null:
-return ready(_that);case _Saving() when saving != null:
-return saving(_that);case _:
+return ready(_that);case _Error() when error != null:
+return error(_that);case _:
   return null;
 
 }
@@ -125,12 +125,12 @@ return saving(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loading,TResult Function( List<ChecklistItem> items)?  ready,TResult Function( List<ChecklistItem> items)?  saving,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loading,TResult Function( List<ChecklistItem> items,  int? selectedDay)?  ready,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Loading() when loading != null:
 return loading();case _Ready() when ready != null:
-return ready(_that.items);case _Saving() when saving != null:
-return saving(_that.items);case _:
+return ready(_that.items,_that.selectedDay);case _Error() when error != null:
+return error(_that.message);case _:
   return orElse();
 
 }
@@ -148,12 +148,12 @@ return saving(_that.items);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loading,required TResult Function( List<ChecklistItem> items)  ready,required TResult Function( List<ChecklistItem> items)  saving,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loading,required TResult Function( List<ChecklistItem> items,  int? selectedDay)  ready,required TResult Function( String message)  error,}) {final _that = this;
 switch (_that) {
 case _Loading():
 return loading();case _Ready():
-return ready(_that.items);case _Saving():
-return saving(_that.items);case _:
+return ready(_that.items,_that.selectedDay);case _Error():
+return error(_that.message);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -170,12 +170,12 @@ return saving(_that.items);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loading,TResult? Function( List<ChecklistItem> items)?  ready,TResult? Function( List<ChecklistItem> items)?  saving,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loading,TResult? Function( List<ChecklistItem> items,  int? selectedDay)?  ready,TResult? Function( String message)?  error,}) {final _that = this;
 switch (_that) {
 case _Loading() when loading != null:
 return loading();case _Ready() when ready != null:
-return ready(_that.items);case _Saving() when saving != null:
-return saving(_that.items);case _:
+return ready(_that.items,_that.selectedDay);case _Error() when error != null:
+return error(_that.message);case _:
   return null;
 
 }
@@ -219,7 +219,7 @@ String toString() {
 
 
 class _Ready implements ChecklistState {
-  const _Ready({required  List<ChecklistItem> items}): _items = items;
+  const _Ready({required  List<ChecklistItem> items, this.selectedDay}): _items = items;
   
 
  final  List<ChecklistItem> _items;
@@ -229,6 +229,7 @@ class _Ready implements ChecklistState {
   return EqualUnmodifiableListView(_items);
 }
 
+ final  int? selectedDay;
 
 /// Create a copy of ChecklistState
 /// with the given fields replaced by the non-null parameter values.
@@ -240,16 +241,16 @@ _$ReadyCopyWith<_Ready> get copyWith => __$ReadyCopyWithImpl<_Ready>(this, _$ide
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Ready&&const DeepCollectionEquality().equals(other._items, _items));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Ready&&const DeepCollectionEquality().equals(other._items, _items)&&(identical(other.selectedDay, selectedDay) || other.selectedDay == selectedDay));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_items));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_items),selectedDay);
 
 @override
 String toString() {
-  return 'ChecklistState.ready(items: $items)';
+  return 'ChecklistState.ready(items: $items, selectedDay: $selectedDay)';
 }
 
 
@@ -260,7 +261,7 @@ abstract mixin class _$ReadyCopyWith<$Res> implements $ChecklistStateCopyWith<$R
   factory _$ReadyCopyWith(_Ready value, $Res Function(_Ready) _then) = __$ReadyCopyWithImpl;
 @useResult
 $Res call({
- List<ChecklistItem> items
+ List<ChecklistItem> items, int? selectedDay
 });
 
 
@@ -277,10 +278,11 @@ class __$ReadyCopyWithImpl<$Res>
 
 /// Create a copy of ChecklistState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? items = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? items = null,Object? selectedDay = freezed,}) {
   return _then(_Ready(
 items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
-as List<ChecklistItem>,
+as List<ChecklistItem>,selectedDay: freezed == selectedDay ? _self.selectedDay : selectedDay // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 
@@ -290,49 +292,43 @@ as List<ChecklistItem>,
 /// @nodoc
 
 
-class _Saving implements ChecklistState {
-  const _Saving({required  List<ChecklistItem> items}): _items = items;
+class _Error implements ChecklistState {
+  const _Error({required this.message});
   
 
- final  List<ChecklistItem> _items;
- List<ChecklistItem> get items {
-  if (_items is EqualUnmodifiableListView) return _items;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_items);
-}
-
+ final  String message;
 
 /// Create a copy of ChecklistState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$SavingCopyWith<_Saving> get copyWith => __$SavingCopyWithImpl<_Saving>(this, _$identity);
+_$ErrorCopyWith<_Error> get copyWith => __$ErrorCopyWithImpl<_Error>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Saving&&const DeepCollectionEquality().equals(other._items, _items));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Error&&(identical(other.message, message) || other.message == message));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_items));
+int get hashCode => Object.hash(runtimeType,message);
 
 @override
 String toString() {
-  return 'ChecklistState.saving(items: $items)';
+  return 'ChecklistState.error(message: $message)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$SavingCopyWith<$Res> implements $ChecklistStateCopyWith<$Res> {
-  factory _$SavingCopyWith(_Saving value, $Res Function(_Saving) _then) = __$SavingCopyWithImpl;
+abstract mixin class _$ErrorCopyWith<$Res> implements $ChecklistStateCopyWith<$Res> {
+  factory _$ErrorCopyWith(_Error value, $Res Function(_Error) _then) = __$ErrorCopyWithImpl;
 @useResult
 $Res call({
- List<ChecklistItem> items
+ String message
 });
 
 
@@ -340,19 +336,19 @@ $Res call({
 
 }
 /// @nodoc
-class __$SavingCopyWithImpl<$Res>
-    implements _$SavingCopyWith<$Res> {
-  __$SavingCopyWithImpl(this._self, this._then);
+class __$ErrorCopyWithImpl<$Res>
+    implements _$ErrorCopyWith<$Res> {
+  __$ErrorCopyWithImpl(this._self, this._then);
 
-  final _Saving _self;
-  final $Res Function(_Saving) _then;
+  final _Error _self;
+  final $Res Function(_Error) _then;
 
 /// Create a copy of ChecklistState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? items = null,}) {
-  return _then(_Saving(
-items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
-as List<ChecklistItem>,
+@pragma('vm:prefer-inline') $Res call({Object? message = null,}) {
+  return _then(_Error(
+message: null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 

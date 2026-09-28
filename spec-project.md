@@ -19,15 +19,15 @@
 
 ## 1. Visão Geral
 
-**Problema:** pessoas sentem dúvida ou ansiedade recorrente sobre ter pegado itens essenciais (chave, carteira, celular) antes de sair de casa — em casos de ansiedade de verificação, isso leva a checagens repetidas ou retorno físico para conferir.
+**Problema:** pessoas sentem dúvida ou ansiedade recorrente sobre ter pegado itens essenciais (chave, carteira, celular) antes de sair de casa — em casos de ansiedade de verificação, isso leva a checagens repetidas ou retorno físico para conferir. O mesmo padrão se estende a conferências domésticas (fechar porta, desligar fogão, janela, torneira, etc.).
 
-**Solução:** app mobile que usa a câmera do celular e um modelo de visão computacional on-device para confirmar objetivamente, em segundos, que os itens do checklist estão no lugar de sempre — sem enviar dados para nuvem.
+**Solução:** app mobile onde o usuário cria **itens de conferência** (ex: "Fechar porta", "Desligar fogão") definindo **título**, **objeto monitorado** (catálogo para checagem por IA), **dias da semana** que deve lembrar e **horário**. O app **notifica localmente** nesses dias/horários e permite **registrar a conferência com foto da câmera** (on-device, sem nuvem). Cada item pode ser verificado, editado ou apagado.
 
-**Público-alvo:** pessoas com rotina de saída de casa que querem reduzir a fricção mental de conferência manual, com atenção especial a quem tem ansiedade de verificação (TOC).
+**Público-alvo:** pessoas com rotina de conferências domésticas/semanais que querem reduzir a fricção mental de checagem manual, com atenção especial a quem tem ansiedade de verificação (TOC).
 
-**Plataforma:** Flutter (Android e iOS).
+**Plataforma:** Flutter (Android e iOS). Captura de foto com câmera real; inferência de IA (visão) prevista mas **não integrada nesta fase** — a captura marca o registro como confirmado (placeholder).
 
-**Princípio norteador:** a confirmação do app é tratada como definitiva. O produto não deve incentivar checagem repetida — isso orienta decisões de UX descritas na [seção 6](#6-princípios-de-ux-não-negociáveis-para-o-mvp).
+**Princípio norteador:** a confirmação do app é tratada como definitiva. O produto não deve incentivar checagem repetida — isso orienta a UX (sem botão proeminente de “registrar de novo” quando já registrado no dia).
 
 ---
 
@@ -35,71 +35,73 @@
 
 ### Dentro do escopo
 
-- Configuração de checklist visual (captura de referência dos itens)
-- Checagem diária por câmera comparando com a referência salva
-- Feedback de confirmação (sucesso) ou alerta (item faltando)
-- Histórico simples de dias confirmados
-- Lembrete local por horário (notificação agendada)
-- Lembrete por geolocalização (aviso único ao sair de casa sem confirmar)
-- Processamento 100% on-device, sem conta de usuário, sem backend
+- **Primeiro acesso:** `Welcome` exibido apenas na primeira abertura; depois o app abre direto na listagem de itens.
+- **Listagem de itens:** lista plana de itens com **filtro `Hoje` (dia atual) ou `Todos`**; item registrado no dia recebe sinalização verde (card com fundo `confirmBg` / badge “Registrado”).
+- **Cadastro/edição/exclusão de item:** título, **objeto monitorado** (select com catálogo: Chave, Carteira, Celular, Mochila, Porta, Fogão, Janela, Torneira, Carregador, Guarda-chuva, Remédio, Ferro, etc.), **dias da semana** e **horário**.
+- **Registro por câmera:** ao tocar no card do item, abre a câmera (ou, se já registrado hoje, mostra direto a tela de **Confirmado** já existente); na câmera: preview real + overlay do viewfinder + botão **Registrar** para tirar a foto.
+- **Feedback de registro:** após a captura, exibe **Confirmado** com carimbo de horário. Quando a IA for integrada, também haverá o estado **Item faltando** já existente. A tela de sucesso não tem CTA de “registrar de novo”.
+- **Histórico por item:** por item, calendário de dias confirmados (mesma grade 7 colunas já existente).
+- **Lembretes locais:** **notificações locais** (`flutter_local_notifications`) agendadas por **horário + dias** de cada item; são locais, sem backend, e respeitam “não notificar se já registrado no dia” via sincronização ao abrir o app / ao registrar.
+- **Processamento 100% on-device**, sem conta de usuário, sem backend; persistência via `shared_preferences`.
 
 ### Fora do escopo (v2+)
 
-- Múltiplos locais (trabalho, carro) além de "casa"
-- Múltiplos checklists (ex: um pra sair de casa, outro pra viagem)
-- Sincronização entre dispositivos / conta de usuário
-- Compartilhamento de checklist entre pessoas (ex: família)
-- Fine-tuning de modelo customizado por classe de objeto
-- Push notification remoto / backend
-- Métricas de uso enviadas para servidor (analytics)
+- **Inferência por IA em tempo real** (`tflite_flutter` + modelo MobileNet embeddings) — interface `CheckAiService` já criada, implementação real entra quando houver `.tflite` em `assets/models/`; hoje o resultado é confirmado ao capturar.
+- Lembrete por **geofence/localização** (saiu de casa) — citado no MVP antigo, agora adiado.
+- Múltiplos locais (trabalho, carro) além de "casa".
+- Sincronização entre dispositivos / conta de usuário.
+- Compartilhamento de itens entre pessoas (ex: família).
+- Fine-tuning de modelo customizado por classe de objeto.
+- Push remoto / backend.
+- Métricas de uso enviadas para servidor (analytics).
 
 ---
 
 ## 3. Requisitos Funcionais
 
-### RF01 — Configuração do checklist
+### RF01 — Listagem de itens (filtro por dia)
 
-- O usuário deve poder apontar a câmera para o local de referência e capturar a cena.
-- O sistema deve identificar regiões de objetos na imagem e permitir que o usuário selecione quais monitorar.
-- O usuário deve poder nomear/rotular cada item (ex: "Chave", "Carteira").
-- A referência visual de cada item selecionado deve ser salva localmente.
-- O usuário deve poder editar o checklist depois (adicionar, remover, recapturar um item).
+- Ao abrir o app (após o primeiro acesso), exibir a listagem de itens em `Tabs`/`chips` **`Hoje` | `Todos`** (default `Hoje` = dia da semana atual).
+- `Hoje` mostra apenas itens cujo `weekDays` contém o dia atual; `Todos` mostra todos.
+- Cada card exibe: título, objeto (emoji + label), `HH:mm`, chips dos dias, e **badge verde** quando `registeredAt` é hoje.
 
-### RF02 — Checagem diária
+### RF02 — Cadastro/edição/exclusão de item
 
-- O usuário deve poder iniciar uma checagem apontando a câmera para o local configurado.
-- O sistema deve comparar os itens visíveis no frame atual com as referências salvas.
-- O resultado deve ser exibido em até poucos segundos de captura.
+- O usuário deve poder tocar em **Adicionar item** (FAB) e preencher **título** (obrigatório), **objeto** (select do catálogo), **dias** (FilterChip, ≥1 dia obrigatório), **horário** (`showTimePicker`).
+- Ao salvar, validar título e dias, persistir, **agendar/atualizar notificações** e voltar à lista (com refresh).
+- Em cada card: menu **Editar** (→ form preenchido) e **Excluir** (apaga item, histórico e cancela notificações).
 
-### RF03 — Feedback de resultado
+### RF03 — Registro por câmera (foto)
 
-- Se todos os itens do checklist forem detectados: exibir confirmação de sucesso com carimbo de horário.
-- Se algum item não for detectado: exibir alerta indicando especificamente qual item está faltando.
-- A tela de sucesso não deve oferecer um botão proeminente de "escanear novamente".
+- Um item só pode ser registrado **no dia** em que está em `weekDays` e **dentro da janela de tolerância de ±1 h** ao redor de `time` (ex: 08:00 → 07:00–09:00, mesmo dia civil). Fora dessa janela ou dia, o card fica **Indisponível** com mensagem e botão desabilitado; o toque mostra `SnackBar` com o motivo.
+- Itens registrados permanecem visíveis com badge **Registrado** verde, mesmo fora da janela, e continuam aparecendo no filtro `Todos` porém bloqueados.
+- Ao tocar no card do item:
+  - Se **já registrado hoje** → navegar direto para **Confirmado** (carimbo de horário, `StreakBanner`, sem CTA de novo registro).
+  - Se **não registrado e dentro da janela** → abrir tela de câmera (permissão pedida no momento do uso, com justificativa pt-BR) com **preview real**, overlay do viewfinder e botão **Registrar** (tira foto).
+  - Se **fora da janela/dia** → tela **Indisponível** (ícone de relógio + motivo + `windowLabel` e botão Voltar).
+- Nesta fase, a foto é capturada e o registro é marcado como confirmado (placeholder da IA); a interface `CheckAiService` já isola a futura inferência.
 
-### RF04 — Histórico
+### RF04 — Feedback de registro
 
-- O sistema deve registrar, por dia, se houve confirmação (e a que horas).
-- O usuário deve poder visualizar um resumo (ex: "X de Y dias confirmados no mês").
+- Se registrado com sucesso: **Confirmado** com horário do registro + `StreakBanner`.
+- Quando a IA entrar: se o objeto monitorado não for detectado → estado **Item faltando** (banner `alertBg`, lista de status), já existente em `check_page.dart`.
+- A tela de sucesso não oferece botão proeminente de "registrar novamente" (princípio da confirmação definitiva).
 
-### RF05 — Lembrete por horário
+### RF05 — Histórico por item
 
-- O usuário deve poder definir um horário aproximado de saída.
-- O sistema deve notificar localmente nesse horário somente se o checklist do dia ainda não tiver sido confirmado.
+- Por item, exibir calendário dos últimos 30 dias (grade 7) e contador `X/Y` dias confirmados no mês.
+- O histórico é por `itemId` (chave `toc_history_<itemId>`).
 
-### RF06 — Lembrete por localização (opt-in)
+### RF06 — Lembretes locais (notificações)
 
-- O usuário deve poder ativar, de forma explícita e opcional, um lembrete baseado em localização.
-- O usuário deve definir "minha casa" (localização + raio).
-- O sistema deve monitorar saída da geofence em segundo plano.
-- Ao detectar saída: notificar apenas se o checklist do dia não tiver sido confirmado.
-- O sistema não deve notificar mais de uma vez por dia, independente de quantas vezes o usuário saia e volte.
-- O usuário deve poder desativar esse recurso a qualquer momento, separadamente do restante do app.
+- Ao criar/editar itens, **agendar notificações locais semanais** por item e por dia selecionado no horário definido.
+- Ao abrir o app e ao registrar um item, **sincronizar**: se o item foi registrado hoje, **não notificar** hoje (cancela/adiapta a ocorrência do dia).
+- Solicitar **permissão de notificações** no momento de salvar o primeiro item, com explicação.
 
-### RF07 — Onboarding
+### RF07 — Onboarding e permissões
 
-- Explicar de forma simples e não-clínica o que o app faz.
-- Solicitar permissões (câmera, notificações, localização em segundo plano) apenas no momento em que são necessárias, com justificativa clara de uso.
+- **Welcome** (`Confira uma vez. Siga em paz.`) exibido apenas na primeira abertura (`hasSeenWelcome` em `shared_preferences`); depois redireciona para `/checklist`.
+- Permissões (**câmera** e **notificações**) pedidas apenas quando necessárias, com strings pt-BR em `AndroidManifest.xml`/`Info.plist` e diálogo de justificativa.
 
 ---
 
@@ -107,38 +109,40 @@
 
 | Categoria | Requisito |
 |---|---|
-| **Privacidade** | Nenhuma imagem ou dado de localização deixa o dispositivo. Todo processamento é local. |
-| **Desempenho** | Checagem diária deve concluir em até ~3 segundos após apontar a câmera. |
-| **Bateria** | Monitoramento de geofence deve usar API nativa otimizada do SO, não GPS contínuo. |
-| **Acessibilidade** | Contraste adequado, suporte a leitor de tela nos elementos principais, texto redimensionável. |
-| **Offline** | App deve funcionar 100% sem conexão à internet. |
-| **Compatibilidade** | Android 8+ e iOS 14+ (ajustar conforme suporte mínimo do `tflite_flutter` e `camera`). |
+| **Privacidade** | Nenhuma foto sai do dispositivo. Processamento local; notificações locais sem servidor. |
+| **Desempenho** | Abertura da câmera e captura devem ser fluidas (< 2 s para ficar pronta); registro marca o dia imediatamente após a foto. |
+| **Bateria** | Notificações usam `flutter_local_notifications` com agendamento por `dayOfWeekAndTime`; sem polling contínuo. |
+| **Acessibilidade** | Contraste (`ink`/`inkSoft` sobre `panel`), semântica de botões/cards, texto redimensionável; chips com `Semantics`. |
+| **Offline** | Funciona 100% sem internet. |
+| **Compatibilidade** | Android 8+ e iOS 14+ (ajustar ao `minSdk` do `camera`/`flutter_local_notifications`). |
 
 ---
 
 ## 5. Arquitetura Técnica
 
-### Modelo de visão
+### Visão de registro (sem IA nesta fase)
 
-MobileNetV2/V3 (`.tflite`, via Kaggle Models ou Hugging Face `litert-community`), usado como **extrator de embeddings** — comparação por similaridade entre a referência salva e o frame atual, em vez de classificação fixa por categoria.
+`ChecklistItem` (plano) → `camera` (foto) → `CheckAiService` (placeholder = confirmado) → `checklist_repository.markRegistered` + `history_repository.addToday` → **Confirmado**; `NotificationService` resincroniza.
 
 ### Stack Flutter
 
 | Biblioteca | Papel no MVP |
 |---|---|
-| `camera` | captura de imagem |
-| `tflite_flutter` | inferência do modelo on-device |
-| `hive` | persistência local (checklist, embeddings, histórico, estado de confirmação/lembrete) |
-| `flutter_local_notifications` | lembrete por horário e por geofence |
-| `geofence_service` (ou equivalente) | monitoramento de localização em segundo plano |
+| `camera` | captura de foto (preview + `takePicture`) |
+| `shared_preferences` | persistência de itens, histórico, `hasSeenWelcome` |
+| `flutter_local_notifications` + `timezone`/`flutter_timezone` | agendamento por horário + dias |
+| `flutter_secure_storage` | reservado para tokens futuros (não usado no fluxo de lembretes) |
+| `hive` | **substituído** por `shared_preferences` no MVP (dados JSON) |
+| `tflite_flutter` | **previsto** (não integrado; atrás de `CheckAiService`) |
 | `get_it` + `flutter_bloc` + `go_router` | arquitetura em camadas (ver `AGENTS.md`) |
+| `google_fonts` | tipografia (`Fraunces`/`Inter`) |
 
 ### Dados armazenados localmente
 
-- Lista de itens do checklist (nome + embedding de referência)
-- Histórico de confirmações (data + hora)
-- Configuração de lembretes (horário, geofence ativada/desativada, coordenadas de "casa")
-- Data do último lembrete enviado (para a regra de "uma vez por dia")
+- Itens: `toc_checklist_items` → `List<ChecklistItem>` JSON (`id`, `title`, `objectId`, `time: DayTime`, `weekDays`, `createdAt`, `registeredAt`)
+- Catálogo de objetos: `MonitoredObject` (`id/label/emoji`) — `MonitoredObjects.all` em `domain` (puro Dart)
+- Histórico por item: `toc_history_<itemId>` → `List<HistoryEntry>`
+- Flag de onboarding: `toc_welcome_seen: bool`
 
 > Arquitetura em camadas segue `AGENTS.md`: `domain/` puro, `data/` implementa contratos, `presenter/` consome via BLoC, `GetIt` apenas no `app_module.dart`, modelos com `freezed`.
 
@@ -146,32 +150,33 @@ MobileNetV2/V3 (`.tflite`, via Kaggle Models ou Hugging Face `litert-community`)
 
 ## 6. Princípios de UX (não negociáveis para o MVP)
 
-> Como o produto lida diretamente com um padrão comportamental sensível (verificação compulsiva), estas diretrizes têm prioridade sobre decisões estéticas ou de conveniência.
+> Como o produto lida com um padrão comportamental sensível (verificação compulsiva), estas diretrizes têm prioridade sobre decisões estéticas.
 
-1. **Confirmação é definitiva.** Nenhuma tela de sucesso deve convidar a checar de novo.
-2. **Notificações são condicionais, nunca repetitivas.** Um lembrete só existe se ainda não houve confirmação, e no máximo uma vez por dia por canal.
-3. **Tom neutro e gentil.** Nenhum texto de alerta ou lembrete deve soar como cobrança ou reprimenda.
-4. **Histórico constrói confiança, não ansiedade** — é apresentado como reforço positivo, não como cobrança de sequência perfeita.
-5. **Permissões sensíveis são opt-in e explicadas.** Em especial, localização em segundo plano nunca deve ser obrigatória para o uso básico do app.
+1. **Confirmação é definitiva.** Nenhuma tela de sucesso convida a registrar de novo (sem CTA proeminente).
+2. **Notificações são condicionais.** Um lembrete existe no horário/dia, mas a UI não cobra se já houve registro hoje; o card fica verde.
+3. **Tom neutro e gentil.** Textos de alerta/lembrete sem cobrança ou reprimenda.
+4. **Histórico constrói confiança, não ansiedade** — reforço positivo, não cobrança de sequência perfeita.
+5. **Permissões no uso e explicadas.** Câmera ao tocar para registrar; notificações ao criar o primeiro item; nunca obrigatórias para navegar na lista.
 
 ---
 
 ## 7. Métricas de Sucesso do MVP
 
-- Taxa de conclusão do onboarding (configuração do primeiro checklist)
-- Frequência de uso diário / retenção em 7 e 30 dias
-- Proporção de confirmações com sucesso vs. alerta de item faltando
-- Taxa de ativação do lembrete por localização (opt-in)
-- Feedback qualitativo: o app reduziu a necessidade de checagem física/repetida? (via pesquisa simples in-app ou entrevistas)
+- Taxa de conclusão do welcome → criação do primeiro item.
+- Itens criados por usuário e retenção do uso diário (filtro `Hoje`).
+- Taxa de itens registrados no dia vs. lembretes disparados.
+- Taxa de conclusão do registro por câmera (foto tirada vs. abandono).
+- Feedback: o app reduziu a necessidade de checagem repetida?
 
 ---
 
 ## 8. Riscos e Pontos em Aberto
 
-- **Confiabilidade do modelo:** falso negativo (item está lá, mas não detectado) pode gerar alerta desnecessário e, paradoxalmente, aumentar ansiedade. Vale definir um limiar de confiança testado com usuários reais antes do lançamento.
-- **Permissão de localização em segundo plano:** pode ser rejeitada em review de loja se a justificativa não for clara; ter fluxo de explicação robusto.
-- **Validação clínica:** recomenda-se revisão do fluxo de UX com profissional especializado em TOC (terapia de exposição e prevenção de resposta) antes do lançamento público.
-- **Iluminação/ângulo variável:** a checagem depende de o usuário apontar pro mesmo local nas mesmas condições — variações de luz podem afetar a comparação por similaridade.
+- **IA integrada (YOLO-World):** inferência on-device via `tflite_flutter` com `assets/models/yoloworld.tflite` (float16, 22 classes). O modelo é sensível à escala (só detecta o objeto ocupando ~25–40% do quadro), então a checagem usa **multi-escala** `[1.0, 0.7, 0.5, 0.35]` com *early exit*, tomando o maior score da classe alvo. Limiar de confiança configurável por `--dart-define=AI_CONF_THRESHOLD` (default 0.30; IoU 0.45). Se não houver foto ou a inferência falhar, o resultado é **não detectado** (estado “Item faltando”), sem registrar o dia. Validar o limiar em devices reais para não gerar falsos negativos/positivos que aumentem ansiedade.
+- **Notificações exatas e permissões:** em Android 13+ é preciso `POST_NOTIFICATIONS` e `SCHEDULE_EXACT_ALARM`; o rationale deve ser claro para não ser rejeitado em review.
+- **Câmera/permissão de status:** fluxo de negação + “abrir ajustes” com diálogo em pt-BR.
+- **Resincronia de agenda:** como as notificações são semanais (`dayOfWeekAndTime`), o app resincroniza ao abrir e ao registrar (cancela o dia se já registrado) — documentar a limitação de “uma vez por semana por dia”.
+- **Validação clínica:** revisão do fluxo com profissional de TOC (EPR) antes do lançamento.
 
 ---
 
@@ -181,10 +186,12 @@ MobileNetV2/V3 (`.tflite`, via Kaggle Models ou Hugging Face `litert-community`)
 
 | Requisito | Feature sugerida | Entities (`domain/entities/`) | Repository (`domain/repositories/`) |
 |---|---|---|---|
-| RF01 | `presenter/checklist` | `ChecklistItem` (nome + embedding) | `ChecklistRepository` |
-| RF02/RF03 | `presenter/check` | `CheckResult` | `VisionRepository` (tflite) |
-| RF04 | `presenter/history` | `DailyConfirmation` | `HistoryRepository` (hive) |
-| RF05/RF06 | `presenter/reminders` | `ReminderConfig` | `ReminderRepository` + `GeofenceService` |
-| RF07 | `presenter/onboarding` | — | — |
+| RF01 | `presenter/checklist` (listagem + filtro) | `ChecklistItem`, `MonitoredObject`, `DayTime` | `ChecklistRepository` (`getAll/getByDay/getById`) |
+| RF02 | `presenter/checklist` (form) | — | `ChecklistRepository` (`create/update/delete`) + `NotificationService` |
+| RF03/RF04 | `presenter/check` | `CheckResult` | `CheckRepository` + `CheckAiService` (placeholder) + `CameraService` |
+| RF05 | `presenter/history` | `HistoryEntry` | `HistoryRepository` (por `itemId`) |
+| RF06 | — (serviço) | — | `NotificationService` + `PreferencesService` |
+| RF07 | `presenter/welcome` (`presenter/welcome`) | — | `OnboardingRepository` |
 
-Fluxo técnico MVP: `camera` → `tflite_flutter` (embedding) → comparação similaridade → `hive` (persistência) → `flutter_local_notifications`/`geofence_service` (lembretes).
+Fluxo técnico MVP: `checklist` (lista `Hoje`/`Todos`) → `check` (`camera` foto) → `CheckAiService` (placeholder) → `markRegistered` + `history` → **Confirmado**; `NotificationService.syncAll` agenda por `(item, dias, horário)`.
+

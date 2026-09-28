@@ -1,144 +1,254 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../data/services/camera_service.dart';
+import '../../../domain/entities/checklist_item.dart';
+import '../../../domain/entities/day_time.dart';
+import '../../../domain/entities/monitored_object.dart';
 import '../../shared/colors.dart';
+import '../../shared/widgets/app_cta.dart';
 import '../../shared/widgets/confirm_stamp.dart';
 import '../bloc/check_bloc.dart';
+import '../bloc/check_event.dart';
 import '../bloc/check_state.dart';
 
-class CheckPage extends StatelessWidget {
-  const CheckPage({super.key});
+class CheckPage extends StatefulWidget {
+  const CheckPage({super.key, required this.itemId});
+
+  final String itemId;
+
+  @override
+  State<CheckPage> createState() => _CheckPageState();
+}
+
+class _CheckPageState extends State<CheckPage> {
+  late final CameraService _cameraService;
+  bool _cameraInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _cameraService = GetIt.I<CameraService>();
+    // ignore: discarded_futures
+    _initCamera();
+  }
+
+  Future<void> _initCamera() async {
+    try {
+      await _cameraService.initialize();
+      if (mounted) setState(() => _cameraInitialized = true);
+    } catch (_) {
+      if (mounted) setState(() => _cameraInitialized = false);
+    }
+  }
+
+  @override
+  void dispose() {
+    // ignore: discarded_futures
+    _cameraService.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bg,
-      body: Center(
-        child: Container(
-          width: 300,
-          height: 630,
-          decoration: BoxDecoration(
-            color: AppColors.panel,
-            borderRadius: BorderRadius.circular(34),
-            border: Border.all(color: AppColors.line),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.12),
-                blurRadius: 40,
-                offset: const Offset(0, 18),
-              ),
-            ],
-          ),
-          padding: const EdgeInsets.all(14),
-          child: Column(
-            children: [
-              Container(
-                width: 90,
-                height: 20,
-                decoration: const BoxDecoration(
-                  color: AppColors.ink,
-                  borderRadius: BorderRadius.vertical(bottom: Radius.circular(14)),
-                ),
-              ),
-              const SizedBox(height: 14),
-              Expanded(
-                child: BlocBuilder<CheckBloc, CheckState>(
-                  builder: (context, state) {
-                    return state.when(
-                      loading: () => const Center(child: CircularProgressIndicator(color: AppColors.confirm)),
-                      confirmed: (result) {
-                        final time = DateFormat('HH:mm').format(result.timestamp);
-                        return Column(
+      backgroundColor: AppColors.panel,
+      appBar: AppBar(
+        title: const Text('Registrar'),
+        backgroundColor: AppColors.panel,
+        foregroundColor: AppColors.ink,
+        iconTheme: const IconThemeData(color: AppColors.ink, size: 24),
+        titleTextStyle: const TextStyle(color: AppColors.ink, fontSize: 17, fontWeight: FontWeight.w700),
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          tooltip: 'Voltar',
+          onPressed: () => context.go('/checklist'),
+        ),
+      ),
+      body: BlocBuilder<CheckBloc, CheckState>(
+        builder: (context, state) {
+          return state.when(
+            loading: () => const Center(child: CircularProgressIndicator(color: AppColors.confirm)),
+            ready: (item) {
+              final object = MonitoredObjects.byId(item.objectId);
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(item.title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16, color: AppColors.ink)),
+                        const SizedBox(height: 4),
+                        Text('${object.emoji} ${object.label} • ${item.time.format()}', style: const TextStyle(color: AppColors.inkSoft, fontSize: 12)),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Stack(
                           children: [
-                            Expanded(
-                              child: ConfirmStamp(timeLabel: '$time · tudo no lugar'),
-                            ),
-                            const StreakBanner(text: '20 de 20 dias confirmados'),
-                            const SizedBox(height: 12),
-                            TextButton(
-                              onPressed: () => context.go('/history'),
-                              child: const Text('Ver histórico', style: TextStyle(color: AppColors.inkSoft)),
-                            ),
-                          ],
-                        );
-                      },
-                      missing: (result) {
-                        final missing = result.missingIds;
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                              decoration: BoxDecoration(
-                                color: AppColors.alertBg,
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              child: Text(
-                                missing.isEmpty ? 'Item não detectado' : '${missing.first[0].toUpperCase()}${missing.first.substring(1)} não detectada',
-                                style: const TextStyle(color: AppColors.alert, fontWeight: FontWeight.w600, fontSize: 14),
+                            Positioned.fill(child: _cameraInitialized ? _cameraService.buildPreview() : Container(color: const Color(0xFFE4E7DD))),
+                            Positioned.fill(
+                              child: Container(
+                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), border: Border.all(color: AppColors.line)),
                               ),
                             ),
-                            const SizedBox(height: 14),
-                            ...result.items.map((item) {
-                              final isMissing = missing.contains(item.id);
-                              return Container(
-                                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
-                                decoration: const BoxDecoration(
-                                  border: Border(bottom: BorderSide(color: AppColors.line)),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text('${item.emoji} ${item.label}', style: const TextStyle(fontSize: 14)),
-                                    Text(
-                                      isMissing ? 'não vista' : 'detectada',
-                                      style: TextStyle(
-                                        fontSize: 12.5,
-                                        fontWeight: FontWeight.w600,
-                                        color: isMissing ? AppColors.alert : AppColors.confirm,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }),
-                            const Spacer(),
-                            SizedBox(
-                              width: double.infinity,
-                              child: OutlinedButton(
-                                onPressed: () => context.go('/history'),
-                                style: OutlinedButton.styleFrom(
-                                  foregroundColor: AppColors.inkSoft,
-                                  side: const BorderSide(color: AppColors.line),
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                                ),
-                                child: const Text('Revisar', style: TextStyle(fontSize: 13)),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                      error: (message) => Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.error_outline, color: AppColors.alert),
-                            const SizedBox(height: 12),
-                            Text(message, textAlign: TextAlign.center),
                           ],
                         ),
                       ),
-                    );
-                  },
+                    ),
+                  ),
+                  SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+                      child: AppCta(
+                        label: 'Registrar',
+                        onPressed: () async {
+                          // ignore: discarded_futures
+                          final photo = await _cameraService.takePicture();
+                          if (context.mounted) {
+                            context.read<CheckBloc>().add(CheckEvent.captureRequested(photo?.path));
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+            processing: (item) => const Center(child: CircularProgressIndicator(color: AppColors.confirm)),
+            confirmed: (result) {
+              final time = DateFormat('HH:mm').format(result.timestamp);
+              final hasPhoto = result.photoPath != null && File(result.photoPath!).existsSync();
+              return Column(
+                children: [
+                  Expanded(
+                    child: Center(
+                      child: ConfirmStamp(timeLabel: '$time · ${result.item.title} registrado'),
+                    ),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24),
+                    child: StreakBanner(text: 'Registrado com sucesso'),
+                  ),
+                  if (hasPhoto)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 8, 24, 0),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            // ignore: discarded_futures
+                            showDialog(
+                              context: context,
+                              builder: (context) => Dialog(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Image.file(File(result.photoPath!), fit: BoxFit.cover),
+                                ),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.photo_outlined, size: 18),
+                          label: const Text('Ver foto'),
+                        ),
+                      ),
+                    ),
+                  SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
+                      child: AppGhostButton(
+                        label: 'Ver histórico',
+                        onPressed: () => context.go('/history/${result.item.id}'),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+            missing: (result) {
+              final object = MonitoredObjects.byId(result.item.objectId);
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      decoration: BoxDecoration(color: AppColors.alertBg, borderRadius: BorderRadius.circular(14)),
+                      child: Text('${object.label} não detectado', style: const TextStyle(color: AppColors.alert, fontWeight: FontWeight.w600, fontSize: 14)),
+                    ),
+                  ),
+                  Expanded(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('${object.emoji} ${object.label}', style: const TextStyle(fontSize: 32)),
+                          const SizedBox(height: 8),
+                          Text(result.item.title, style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.ink)),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
+                      child: AppSecondaryButton(
+                        label: 'Tentar novamente',
+                        onPressed: () => context.read<CheckBloc>().add(const CheckEvent.started()),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+            unavailable: (item, message) => Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.schedule, color: AppColors.inkSoft, size: 48),
+                    const SizedBox(height: 12),
+                    Text(item.title, style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.ink)),
+                    const SizedBox(height: 8),
+                    Text(message, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.inkSoft)),
+                    const SizedBox(height: 4),
+                    Text(item.windowLabel(), textAlign: TextAlign.center, style: const TextStyle(color: AppColors.inkSoft, fontSize: 12)),
+                    const SizedBox(height: 16),
+                    AppSecondaryButton(label: 'Voltar', onPressed: () => context.go('/checklist')),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
+            ),
+            error: (message) => Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.error_outline, color: AppColors.alert, size: 48),
+                    const SizedBox(height: 12),
+                    Text(message, textAlign: TextAlign.center),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

@@ -11,33 +11,30 @@ part of 'check_result.dart';
 
 // dart format off
 T _$identity<T>(T value) => value;
-
 /// @nodoc
 mixin _$CheckResult {
 
- DateTime get timestamp; List<ChecklistItem> get items; List<String> get missingIds;
+ ChecklistItem get item; bool get detected; DateTime get timestamp; String? get photoPath;
 /// Create a copy of CheckResult
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
 $CheckResultCopyWith<CheckResult> get copyWith => _$CheckResultCopyWithImpl<CheckResult>(this as CheckResult, _$identity);
 
-  /// Serializes this CheckResult to a JSON map.
-  Map<String, dynamic> toJson();
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CheckResult&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp)&&const DeepCollectionEquality().equals(other.items, items)&&const DeepCollectionEquality().equals(other.missingIds, missingIds));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CheckResult&&(identical(other.item, item) || other.item == item)&&(identical(other.detected, detected) || other.detected == detected)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp)&&(identical(other.photoPath, photoPath) || other.photoPath == photoPath));
 }
 
-@JsonKey(includeFromJson: false, includeToJson: false)
+
 @override
-int get hashCode => Object.hash(runtimeType,timestamp,const DeepCollectionEquality().hash(items),const DeepCollectionEquality().hash(missingIds));
+int get hashCode => Object.hash(runtimeType,item,detected,timestamp,photoPath);
 
 @override
 String toString() {
-  return 'CheckResult(timestamp: $timestamp, items: $items, missingIds: $missingIds)';
+  return 'CheckResult(item: $item, detected: $detected, timestamp: $timestamp, photoPath: $photoPath)';
 }
 
 
@@ -48,11 +45,11 @@ abstract mixin class $CheckResultCopyWith<$Res>  {
   factory $CheckResultCopyWith(CheckResult value, $Res Function(CheckResult) _then) = _$CheckResultCopyWithImpl;
 @useResult
 $Res call({
- DateTime timestamp, List<ChecklistItem> items, List<String> missingIds
+ ChecklistItem item, bool detected, DateTime timestamp, String? photoPath
 });
 
 
-
+$ChecklistItemCopyWith<$Res> get item;
 
 }
 /// @nodoc
@@ -65,15 +62,25 @@ class _$CheckResultCopyWithImpl<$Res>
 
 /// Create a copy of CheckResult
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? timestamp = null,Object? items = null,Object? missingIds = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? item = null,Object? detected = null,Object? timestamp = null,Object? photoPath = freezed,}) {
   return _then(_self.copyWith(
-timestamp: null == timestamp ? _self.timestamp : timestamp // ignore: cast_nullable_to_non_nullable
-as DateTime,items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
-as List<ChecklistItem>,missingIds: null == missingIds ? _self.missingIds : missingIds // ignore: cast_nullable_to_non_nullable
-as List<String>,
+item: null == item ? _self.item : item // ignore: cast_nullable_to_non_nullable
+as ChecklistItem,detected: null == detected ? _self.detected : detected // ignore: cast_nullable_to_non_nullable
+as bool,timestamp: null == timestamp ? _self.timestamp : timestamp // ignore: cast_nullable_to_non_nullable
+as DateTime,photoPath: freezed == photoPath ? _self.photoPath : photoPath // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
-
+/// Create a copy of CheckResult
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ChecklistItemCopyWith<$Res> get item {
+  
+  return $ChecklistItemCopyWith<$Res>(_self.item, (value) {
+    return _then(_self.copyWith(item: value));
+  });
+}
 }
 
 
@@ -155,10 +162,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( DateTime timestamp,  List<ChecklistItem> items,  List<String> missingIds)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ChecklistItem item,  bool detected,  DateTime timestamp,  String? photoPath)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CheckResult() when $default != null:
-return $default(_that.timestamp,_that.items,_that.missingIds);case _:
+return $default(_that.item,_that.detected,_that.timestamp,_that.photoPath);case _:
   return orElse();
 
 }
@@ -176,10 +183,10 @@ return $default(_that.timestamp,_that.items,_that.missingIds);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( DateTime timestamp,  List<ChecklistItem> items,  List<String> missingIds)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ChecklistItem item,  bool detected,  DateTime timestamp,  String? photoPath)  $default,) {final _that = this;
 switch (_that) {
 case _CheckResult():
-return $default(_that.timestamp,_that.items,_that.missingIds);case _:
+return $default(_that.item,_that.detected,_that.timestamp,_that.photoPath);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +203,10 @@ return $default(_that.timestamp,_that.items,_that.missingIds);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( DateTime timestamp,  List<ChecklistItem> items,  List<String> missingIds)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ChecklistItem item,  bool detected,  DateTime timestamp,  String? photoPath)?  $default,) {final _that = this;
 switch (_that) {
 case _CheckResult() when $default != null:
-return $default(_that.timestamp,_that.items,_that.missingIds);case _:
+return $default(_that.item,_that.detected,_that.timestamp,_that.photoPath);case _:
   return null;
 
 }
@@ -208,27 +215,16 @@ return $default(_that.timestamp,_that.items,_that.missingIds);case _:
 }
 
 /// @nodoc
-@JsonSerializable()
+
 
 class _CheckResult implements CheckResult {
-  const _CheckResult({required this.timestamp, required  List<ChecklistItem> items, required  List<String> missingIds}): _items = items,_missingIds = missingIds;
-  factory _CheckResult.fromJson(Map<String, dynamic> json) => _$CheckResultFromJson(json);
+  const _CheckResult({required this.item, required this.detected, required this.timestamp, this.photoPath});
+  
 
+@override final  ChecklistItem item;
+@override final  bool detected;
 @override final  DateTime timestamp;
- final  List<ChecklistItem> _items;
-@override List<ChecklistItem> get items {
-  if (_items is EqualUnmodifiableListView) return _items;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_items);
-}
-
- final  List<String> _missingIds;
-@override List<String> get missingIds {
-  if (_missingIds is EqualUnmodifiableListView) return _missingIds;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_missingIds);
-}
-
+@override final  String? photoPath;
 
 /// Create a copy of CheckResult
 /// with the given fields replaced by the non-null parameter values.
@@ -236,23 +232,20 @@ class _CheckResult implements CheckResult {
 @pragma('vm:prefer-inline')
 _$CheckResultCopyWith<_CheckResult> get copyWith => __$CheckResultCopyWithImpl<_CheckResult>(this, _$identity);
 
-@override
-Map<String, dynamic> toJson() {
-  return _$CheckResultToJson(this, );
-}
+
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CheckResult&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp)&&const DeepCollectionEquality().equals(other._items, _items)&&const DeepCollectionEquality().equals(other._missingIds, _missingIds));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CheckResult&&(identical(other.item, item) || other.item == item)&&(identical(other.detected, detected) || other.detected == detected)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp)&&(identical(other.photoPath, photoPath) || other.photoPath == photoPath));
 }
 
-@JsonKey(includeFromJson: false, includeToJson: false)
+
 @override
-int get hashCode => Object.hash(runtimeType,timestamp,const DeepCollectionEquality().hash(_items),const DeepCollectionEquality().hash(_missingIds));
+int get hashCode => Object.hash(runtimeType,item,detected,timestamp,photoPath);
 
 @override
 String toString() {
-  return 'CheckResult(timestamp: $timestamp, items: $items, missingIds: $missingIds)';
+  return 'CheckResult(item: $item, detected: $detected, timestamp: $timestamp, photoPath: $photoPath)';
 }
 
 
@@ -263,11 +256,11 @@ abstract mixin class _$CheckResultCopyWith<$Res> implements $CheckResultCopyWith
   factory _$CheckResultCopyWith(_CheckResult value, $Res Function(_CheckResult) _then) = __$CheckResultCopyWithImpl;
 @override @useResult
 $Res call({
- DateTime timestamp, List<ChecklistItem> items, List<String> missingIds
+ ChecklistItem item, bool detected, DateTime timestamp, String? photoPath
 });
 
 
-
+@override $ChecklistItemCopyWith<$Res> get item;
 
 }
 /// @nodoc
@@ -280,16 +273,26 @@ class __$CheckResultCopyWithImpl<$Res>
 
 /// Create a copy of CheckResult
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? timestamp = null,Object? items = null,Object? missingIds = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? item = null,Object? detected = null,Object? timestamp = null,Object? photoPath = freezed,}) {
   return _then(_CheckResult(
-timestamp: null == timestamp ? _self.timestamp : timestamp // ignore: cast_nullable_to_non_nullable
-as DateTime,items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
-as List<ChecklistItem>,missingIds: null == missingIds ? _self._missingIds : missingIds // ignore: cast_nullable_to_non_nullable
-as List<String>,
+item: null == item ? _self.item : item // ignore: cast_nullable_to_non_nullable
+as ChecklistItem,detected: null == detected ? _self.detected : detected // ignore: cast_nullable_to_non_nullable
+as bool,timestamp: null == timestamp ? _self.timestamp : timestamp // ignore: cast_nullable_to_non_nullable
+as DateTime,photoPath: freezed == photoPath ? _self.photoPath : photoPath // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
-
+/// Create a copy of CheckResult
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ChecklistItemCopyWith<$Res> get item {
+  
+  return $ChecklistItemCopyWith<$Res>(_self.item, (value) {
+    return _then(_self.copyWith(item: value));
+  });
+}
 }
 
 // dart format on

@@ -55,13 +55,13 @@ extension ChecklistEventPatterns on ChecklistEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Started value)?  started,TResult Function( _Toggled value)?  toggled,TResult Function( _Saved value)?  saved,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Started value)?  started,TResult Function( _FilterChanged value)?  filterChanged,TResult Function( _Deleted value)?  deleted,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Started() when started != null:
-return started(_that);case _Toggled() when toggled != null:
-return toggled(_that);case _Saved() when saved != null:
-return saved(_that);case _:
+return started(_that);case _FilterChanged() when filterChanged != null:
+return filterChanged(_that);case _Deleted() when deleted != null:
+return deleted(_that);case _:
   return orElse();
 
 }
@@ -79,13 +79,13 @@ return saved(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Started value)  started,required TResult Function( _Toggled value)  toggled,required TResult Function( _Saved value)  saved,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Started value)  started,required TResult Function( _FilterChanged value)  filterChanged,required TResult Function( _Deleted value)  deleted,}){
 final _that = this;
 switch (_that) {
 case _Started():
-return started(_that);case _Toggled():
-return toggled(_that);case _Saved():
-return saved(_that);case _:
+return started(_that);case _FilterChanged():
+return filterChanged(_that);case _Deleted():
+return deleted(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -102,13 +102,13 @@ return saved(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Started value)?  started,TResult? Function( _Toggled value)?  toggled,TResult? Function( _Saved value)?  saved,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Started value)?  started,TResult? Function( _FilterChanged value)?  filterChanged,TResult? Function( _Deleted value)?  deleted,}){
 final _that = this;
 switch (_that) {
 case _Started() when started != null:
-return started(_that);case _Toggled() when toggled != null:
-return toggled(_that);case _Saved() when saved != null:
-return saved(_that);case _:
+return started(_that);case _FilterChanged() when filterChanged != null:
+return filterChanged(_that);case _Deleted() when deleted != null:
+return deleted(_that);case _:
   return null;
 
 }
@@ -125,12 +125,12 @@ return saved(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  started,TResult Function( String id)?  toggled,TResult Function()?  saved,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  started,TResult Function( int? day)?  filterChanged,TResult Function( String id)?  deleted,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Started() when started != null:
-return started();case _Toggled() when toggled != null:
-return toggled(_that.id);case _Saved() when saved != null:
-return saved();case _:
+return started();case _FilterChanged() when filterChanged != null:
+return filterChanged(_that.day);case _Deleted() when deleted != null:
+return deleted(_that.id);case _:
   return orElse();
 
 }
@@ -148,12 +148,12 @@ return saved();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  started,required TResult Function( String id)  toggled,required TResult Function()  saved,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  started,required TResult Function( int? day)  filterChanged,required TResult Function( String id)  deleted,}) {final _that = this;
 switch (_that) {
 case _Started():
-return started();case _Toggled():
-return toggled(_that.id);case _Saved():
-return saved();case _:
+return started();case _FilterChanged():
+return filterChanged(_that.day);case _Deleted():
+return deleted(_that.id);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -170,12 +170,12 @@ return saved();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  started,TResult? Function( String id)?  toggled,TResult? Function()?  saved,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  started,TResult? Function( int? day)?  filterChanged,TResult? Function( String id)?  deleted,}) {final _that = this;
 switch (_that) {
 case _Started() when started != null:
-return started();case _Toggled() when toggled != null:
-return toggled(_that.id);case _Saved() when saved != null:
-return saved();case _:
+return started();case _FilterChanged() when filterChanged != null:
+return filterChanged(_that.day);case _Deleted() when deleted != null:
+return deleted(_that.id);case _:
   return null;
 
 }
@@ -218,8 +218,74 @@ String toString() {
 /// @nodoc
 
 
-class _Toggled implements ChecklistEvent {
-  const _Toggled(this.id);
+class _FilterChanged implements ChecklistEvent {
+  const _FilterChanged(this.day);
+  
+
+ final  int? day;
+
+/// Create a copy of ChecklistEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$FilterChangedCopyWith<_FilterChanged> get copyWith => __$FilterChangedCopyWithImpl<_FilterChanged>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FilterChanged&&(identical(other.day, day) || other.day == day));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,day);
+
+@override
+String toString() {
+  return 'ChecklistEvent.filterChanged(day: $day)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$FilterChangedCopyWith<$Res> implements $ChecklistEventCopyWith<$Res> {
+  factory _$FilterChangedCopyWith(_FilterChanged value, $Res Function(_FilterChanged) _then) = __$FilterChangedCopyWithImpl;
+@useResult
+$Res call({
+ int? day
+});
+
+
+
+
+}
+/// @nodoc
+class __$FilterChangedCopyWithImpl<$Res>
+    implements _$FilterChangedCopyWith<$Res> {
+  __$FilterChangedCopyWithImpl(this._self, this._then);
+
+  final _FilterChanged _self;
+  final $Res Function(_FilterChanged) _then;
+
+/// Create a copy of ChecklistEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? day = freezed,}) {
+  return _then(_FilterChanged(
+freezed == day ? _self.day : day // ignore: cast_nullable_to_non_nullable
+as int?,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _Deleted implements ChecklistEvent {
+  const _Deleted(this.id);
   
 
  final  String id;
@@ -228,13 +294,13 @@ class _Toggled implements ChecklistEvent {
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$ToggledCopyWith<_Toggled> get copyWith => __$ToggledCopyWithImpl<_Toggled>(this, _$identity);
+_$DeletedCopyWith<_Deleted> get copyWith => __$DeletedCopyWithImpl<_Deleted>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Toggled&&(identical(other.id, id) || other.id == id));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Deleted&&(identical(other.id, id) || other.id == id));
 }
 
 
@@ -243,15 +309,15 @@ int get hashCode => Object.hash(runtimeType,id);
 
 @override
 String toString() {
-  return 'ChecklistEvent.toggled(id: $id)';
+  return 'ChecklistEvent.deleted(id: $id)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$ToggledCopyWith<$Res> implements $ChecklistEventCopyWith<$Res> {
-  factory _$ToggledCopyWith(_Toggled value, $Res Function(_Toggled) _then) = __$ToggledCopyWithImpl;
+abstract mixin class _$DeletedCopyWith<$Res> implements $ChecklistEventCopyWith<$Res> {
+  factory _$DeletedCopyWith(_Deleted value, $Res Function(_Deleted) _then) = __$DeletedCopyWithImpl;
 @useResult
 $Res call({
  String id
@@ -262,17 +328,17 @@ $Res call({
 
 }
 /// @nodoc
-class __$ToggledCopyWithImpl<$Res>
-    implements _$ToggledCopyWith<$Res> {
-  __$ToggledCopyWithImpl(this._self, this._then);
+class __$DeletedCopyWithImpl<$Res>
+    implements _$DeletedCopyWith<$Res> {
+  __$DeletedCopyWithImpl(this._self, this._then);
 
-  final _Toggled _self;
-  final $Res Function(_Toggled) _then;
+  final _Deleted _self;
+  final $Res Function(_Deleted) _then;
 
 /// Create a copy of ChecklistEvent
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') $Res call({Object? id = null,}) {
-  return _then(_Toggled(
+  return _then(_Deleted(
 null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,
   ));
@@ -280,37 +346,5 @@ as String,
 
 
 }
-
-/// @nodoc
-
-
-class _Saved implements ChecklistEvent {
-  const _Saved();
-  
-
-
-
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Saved);
-}
-
-
-@override
-int get hashCode => runtimeType.hashCode;
-
-@override
-String toString() {
-  return 'ChecklistEvent.saved()';
-}
-
-
-}
-
-
-
 
 // dart format on

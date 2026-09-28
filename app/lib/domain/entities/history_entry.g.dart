@@ -13,6 +13,7 @@ _HistoryEntry _$HistoryEntryFromJson(Map<String, dynamic> json) =>
       confirmedAt: json['confirmedAt'] == null
           ? null
           : DateTime.parse(json['confirmedAt'] as String),
+      photoPath: json['photoPath'] as String?,
     );
 
 Map<String, dynamic> _$HistoryEntryToJson(_HistoryEntry instance) =>
@@ -20,4 +21,5 @@ Map<String, dynamic> _$HistoryEntryToJson(_HistoryEntry instance) =>
       'date': instance.date.toIso8601String(),
       'confirmed': instance.confirmed,
       'confirmedAt': instance.confirmedAt?.toIso8601String(),
+      'photoPath': instance.photoPath,
     };

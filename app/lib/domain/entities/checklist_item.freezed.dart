@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ChecklistItem {
 
- String get id; String get label; String get emoji; bool get selected;
+ String get id; String get title; String get objectId; DayTime get time; List<int> get weekDays; DateTime get createdAt; DateTime? get registeredAt;
 /// Create a copy of ChecklistItem
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $ChecklistItemCopyWith<ChecklistItem> get copyWith => _$ChecklistItemCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChecklistItem&&(identical(other.id, id) || other.id == id)&&(identical(other.label, label) || other.label == label)&&(identical(other.emoji, emoji) || other.emoji == emoji)&&(identical(other.selected, selected) || other.selected == selected));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChecklistItem&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.objectId, objectId) || other.objectId == objectId)&&(identical(other.time, time) || other.time == time)&&const DeepCollectionEquality().equals(other.weekDays, weekDays)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.registeredAt, registeredAt) || other.registeredAt == registeredAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,label,emoji,selected);
+int get hashCode => Object.hash(runtimeType,id,title,objectId,time,const DeepCollectionEquality().hash(weekDays),createdAt,registeredAt);
 
 @override
 String toString() {
-  return 'ChecklistItem(id: $id, label: $label, emoji: $emoji, selected: $selected)';
+  return 'ChecklistItem(id: $id, title: $title, objectId: $objectId, time: $time, weekDays: $weekDays, createdAt: $createdAt, registeredAt: $registeredAt)';
 }
 
 
@@ -48,11 +48,11 @@ abstract mixin class $ChecklistItemCopyWith<$Res>  {
   factory $ChecklistItemCopyWith(ChecklistItem value, $Res Function(ChecklistItem) _then) = _$ChecklistItemCopyWithImpl;
 @useResult
 $Res call({
- String id, String label, String emoji, bool selected
+ String id, String title, String objectId, DayTime time, List<int> weekDays, DateTime createdAt, DateTime? registeredAt
 });
 
 
-
+$DayTimeCopyWith<$Res> get time;
 
 }
 /// @nodoc
@@ -65,16 +65,28 @@ class _$ChecklistItemCopyWithImpl<$Res>
 
 /// Create a copy of ChecklistItem
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? label = null,Object? emoji = null,Object? selected = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? objectId = null,Object? time = null,Object? weekDays = null,Object? createdAt = null,Object? registeredAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,label: null == label ? _self.label : label // ignore: cast_nullable_to_non_nullable
-as String,emoji: null == emoji ? _self.emoji : emoji // ignore: cast_nullable_to_non_nullable
-as String,selected: null == selected ? _self.selected : selected // ignore: cast_nullable_to_non_nullable
-as bool,
+as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,objectId: null == objectId ? _self.objectId : objectId // ignore: cast_nullable_to_non_nullable
+as String,time: null == time ? _self.time : time // ignore: cast_nullable_to_non_nullable
+as DayTime,weekDays: null == weekDays ? _self.weekDays : weekDays // ignore: cast_nullable_to_non_nullable
+as List<int>,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime,registeredAt: freezed == registeredAt ? _self.registeredAt : registeredAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
-
+/// Create a copy of ChecklistItem
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$DayTimeCopyWith<$Res> get time {
+  
+  return $DayTimeCopyWith<$Res>(_self.time, (value) {
+    return _then(_self.copyWith(time: value));
+  });
+}
 }
 
 
@@ -156,10 +168,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String label,  String emoji,  bool selected)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String objectId,  DayTime time,  List<int> weekDays,  DateTime createdAt,  DateTime? registeredAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ChecklistItem() when $default != null:
-return $default(_that.id,_that.label,_that.emoji,_that.selected);case _:
+return $default(_that.id,_that.title,_that.objectId,_that.time,_that.weekDays,_that.createdAt,_that.registeredAt);case _:
   return orElse();
 
 }
@@ -177,10 +189,10 @@ return $default(_that.id,_that.label,_that.emoji,_that.selected);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String label,  String emoji,  bool selected)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String objectId,  DayTime time,  List<int> weekDays,  DateTime createdAt,  DateTime? registeredAt)  $default,) {final _that = this;
 switch (_that) {
 case _ChecklistItem():
-return $default(_that.id,_that.label,_that.emoji,_that.selected);case _:
+return $default(_that.id,_that.title,_that.objectId,_that.time,_that.weekDays,_that.createdAt,_that.registeredAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -197,10 +209,10 @@ return $default(_that.id,_that.label,_that.emoji,_that.selected);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String label,  String emoji,  bool selected)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String objectId,  DayTime time,  List<int> weekDays,  DateTime createdAt,  DateTime? registeredAt)?  $default,) {final _that = this;
 switch (_that) {
 case _ChecklistItem() when $default != null:
-return $default(_that.id,_that.label,_that.emoji,_that.selected);case _:
+return $default(_that.id,_that.title,_that.objectId,_that.time,_that.weekDays,_that.createdAt,_that.registeredAt);case _:
   return null;
 
 }
@@ -212,13 +224,22 @@ return $default(_that.id,_that.label,_that.emoji,_that.selected);case _:
 @JsonSerializable()
 
 class _ChecklistItem implements ChecklistItem {
-  const _ChecklistItem({required this.id, required this.label, required this.emoji, this.selected = true});
+  const _ChecklistItem({required this.id, required this.title, required this.objectId, required this.time, required  List<int> weekDays, required this.createdAt, this.registeredAt}): _weekDays = weekDays;
   factory _ChecklistItem.fromJson(Map<String, dynamic> json) => _$ChecklistItemFromJson(json);
 
 @override final  String id;
-@override final  String label;
-@override final  String emoji;
-@override@JsonKey() final  bool selected;
+@override final  String title;
+@override final  String objectId;
+@override final  DayTime time;
+ final  List<int> _weekDays;
+@override List<int> get weekDays {
+  if (_weekDays is EqualUnmodifiableListView) return _weekDays;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_weekDays);
+}
+
+@override final  DateTime createdAt;
+@override final  DateTime? registeredAt;
 
 /// Create a copy of ChecklistItem
 /// with the given fields replaced by the non-null parameter values.
@@ -233,16 +254,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChecklistItem&&(identical(other.id, id) || other.id == id)&&(identical(other.label, label) || other.label == label)&&(identical(other.emoji, emoji) || other.emoji == emoji)&&(identical(other.selected, selected) || other.selected == selected));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChecklistItem&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.objectId, objectId) || other.objectId == objectId)&&(identical(other.time, time) || other.time == time)&&const DeepCollectionEquality().equals(other._weekDays, _weekDays)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.registeredAt, registeredAt) || other.registeredAt == registeredAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,label,emoji,selected);
+int get hashCode => Object.hash(runtimeType,id,title,objectId,time,const DeepCollectionEquality().hash(_weekDays),createdAt,registeredAt);
 
 @override
 String toString() {
-  return 'ChecklistItem(id: $id, label: $label, emoji: $emoji, selected: $selected)';
+  return 'ChecklistItem(id: $id, title: $title, objectId: $objectId, time: $time, weekDays: $weekDays, createdAt: $createdAt, registeredAt: $registeredAt)';
 }
 
 
@@ -253,11 +274,11 @@ abstract mixin class _$ChecklistItemCopyWith<$Res> implements $ChecklistItemCopy
   factory _$ChecklistItemCopyWith(_ChecklistItem value, $Res Function(_ChecklistItem) _then) = __$ChecklistItemCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String label, String emoji, bool selected
+ String id, String title, String objectId, DayTime time, List<int> weekDays, DateTime createdAt, DateTime? registeredAt
 });
 
 
-
+@override $DayTimeCopyWith<$Res> get time;
 
 }
 /// @nodoc
@@ -270,17 +291,29 @@ class __$ChecklistItemCopyWithImpl<$Res>
 
 /// Create a copy of ChecklistItem
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? label = null,Object? emoji = null,Object? selected = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? objectId = null,Object? time = null,Object? weekDays = null,Object? createdAt = null,Object? registeredAt = freezed,}) {
   return _then(_ChecklistItem(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,label: null == label ? _self.label : label // ignore: cast_nullable_to_non_nullable
-as String,emoji: null == emoji ? _self.emoji : emoji // ignore: cast_nullable_to_non_nullable
-as String,selected: null == selected ? _self.selected : selected // ignore: cast_nullable_to_non_nullable
-as bool,
+as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,objectId: null == objectId ? _self.objectId : objectId // ignore: cast_nullable_to_non_nullable
+as String,time: null == time ? _self.time : time // ignore: cast_nullable_to_non_nullable
+as DayTime,weekDays: null == weekDays ? _self._weekDays : weekDays // ignore: cast_nullable_to_non_nullable
+as List<int>,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime,registeredAt: freezed == registeredAt ? _self.registeredAt : registeredAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 
-
+/// Create a copy of ChecklistItem
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$DayTimeCopyWith<$Res> get time {
+  
+  return $DayTimeCopyWith<$Res>(_self.time, (value) {
+    return _then(_self.copyWith(time: value));
+  });
+}
 }
 
 // dart format on

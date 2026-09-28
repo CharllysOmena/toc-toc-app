@@ -5,6 +5,6 @@ part 'checklist_event.freezed.dart';
 @freezed
 abstract class ChecklistEvent with _$ChecklistEvent {
   const factory ChecklistEvent.started() = _Started;
-  const factory ChecklistEvent.toggled(String id) = _Toggled;
-  const factory ChecklistEvent.saved() = _Saved;
+  const factory ChecklistEvent.filterChanged(int? day) = _FilterChanged;
+  const factory ChecklistEvent.deleted(String id) = _Deleted;
 }

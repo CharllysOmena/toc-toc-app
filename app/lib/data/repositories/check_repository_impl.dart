@@ -1,35 +1,24 @@
 import '../../domain/entities/check_result.dart';
 import '../../domain/repositories/check_repository.dart';
 import '../../domain/repositories/checklist_repository.dart';
+import '../services/check_ai_service.dart';
 
 class CheckRepositoryImpl implements CheckRepository {
-  CheckRepositoryImpl(this._checklistRepository);
+  CheckRepositoryImpl(this._checklistRepository, this._aiService);
 
   final ChecklistRepository _checklistRepository;
+  final CheckAiService _aiService;
   CheckResult? _last;
 
   @override
   CheckResult? get lastResult => _last;
 
   @override
-  Future<CheckResult> performCheck() async {
-    final items = await _checklistRepository.getItems();
-    final selected = items.where((e) => e.selected).toList();
-    await Future<void>.delayed(const Duration(milliseconds: 700));
-
-    final missingIds = <String>[];
-    if (selected.any((e) => e.id == 'carteira')) {
-      final shouldMiss = DateTime.now().millisecond % 3 == 0;
-      if (shouldMiss) {
-        missingIds.add('carteira');
-      }
-    }
-
-    _last = CheckResult(
-      timestamp: DateTime.now(),
-      items: selected,
-      missingIds: missingIds,
-    );
+  Future<CheckResult> performCheck(String itemId, {String? photoPath}) async {
+    final item = await _checklistRepository.getById(itemId);
+    if (item == null) throw Exception('Item não encontrado');
+    final detected = await _aiService.detect(item, photoPath);
+    _last = CheckResult(item: item, detected: detected, timestamp: DateTime.now());
     return _last!;
   }
 }

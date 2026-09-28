@@ -55,11 +55,12 @@ extension CheckEventPatterns on CheckEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Started value)?  started,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Started value)?  started,TResult Function( _CaptureRequested value)?  captureRequested,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Started() when started != null:
-return started(_that);case _:
+return started(_that);case _CaptureRequested() when captureRequested != null:
+return captureRequested(_that);case _:
   return orElse();
 
 }
@@ -77,11 +78,12 @@ return started(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Started value)  started,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Started value)  started,required TResult Function( _CaptureRequested value)  captureRequested,}){
 final _that = this;
 switch (_that) {
 case _Started():
-return started(_that);case _:
+return started(_that);case _CaptureRequested():
+return captureRequested(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -98,11 +100,12 @@ return started(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Started value)?  started,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Started value)?  started,TResult? Function( _CaptureRequested value)?  captureRequested,}){
 final _that = this;
 switch (_that) {
 case _Started() when started != null:
-return started(_that);case _:
+return started(_that);case _CaptureRequested() when captureRequested != null:
+return captureRequested(_that);case _:
   return null;
 
 }
@@ -119,10 +122,11 @@ return started(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  started,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  started,TResult Function( String? photoPath)?  captureRequested,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Started() when started != null:
-return started();case _:
+return started();case _CaptureRequested() when captureRequested != null:
+return captureRequested(_that.photoPath);case _:
   return orElse();
 
 }
@@ -140,10 +144,11 @@ return started();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  started,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  started,required TResult Function( String? photoPath)  captureRequested,}) {final _that = this;
 switch (_that) {
 case _Started():
-return started();case _:
+return started();case _CaptureRequested():
+return captureRequested(_that.photoPath);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -160,10 +165,11 @@ return started();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  started,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  started,TResult? Function( String? photoPath)?  captureRequested,}) {final _that = this;
 switch (_that) {
 case _Started() when started != null:
-return started();case _:
+return started();case _CaptureRequested() when captureRequested != null:
+return captureRequested(_that.photoPath);case _:
   return null;
 
 }
@@ -202,5 +208,71 @@ String toString() {
 
 
 
+
+/// @nodoc
+
+
+class _CaptureRequested implements CheckEvent {
+  const _CaptureRequested(this.photoPath);
+  
+
+ final  String? photoPath;
+
+/// Create a copy of CheckEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$CaptureRequestedCopyWith<_CaptureRequested> get copyWith => __$CaptureRequestedCopyWithImpl<_CaptureRequested>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CaptureRequested&&(identical(other.photoPath, photoPath) || other.photoPath == photoPath));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,photoPath);
+
+@override
+String toString() {
+  return 'CheckEvent.captureRequested(photoPath: $photoPath)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$CaptureRequestedCopyWith<$Res> implements $CheckEventCopyWith<$Res> {
+  factory _$CaptureRequestedCopyWith(_CaptureRequested value, $Res Function(_CaptureRequested) _then) = __$CaptureRequestedCopyWithImpl;
+@useResult
+$Res call({
+ String? photoPath
+});
+
+
+
+
+}
+/// @nodoc
+class __$CaptureRequestedCopyWithImpl<$Res>
+    implements _$CaptureRequestedCopyWith<$Res> {
+  __$CaptureRequestedCopyWithImpl(this._self, this._then);
+
+  final _CaptureRequested _self;
+  final $Res Function(_CaptureRequested) _then;
+
+/// Create a copy of CheckEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? photoPath = freezed,}) {
+  return _then(_CaptureRequested(
+freezed == photoPath ? _self.photoPath : photoPath // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+
+}
 
 // dart format on

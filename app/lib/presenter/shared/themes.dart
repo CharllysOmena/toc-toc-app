@@ -34,6 +34,22 @@ abstract class AppThemes {
         color: AppColors.panel,
         elevation: 0,
       ),
+      chipTheme: ChipThemeData(
+        backgroundColor: AppColors.chipOff,
+        selectedColor: AppColors.confirmBg,
+        checkmarkColor: AppColors.confirm,
+        side: const BorderSide(color: AppColors.line),
+        labelStyle: const TextStyle(color: AppColors.inkSoft, fontWeight: FontWeight.w500),
+        secondaryLabelStyle: const TextStyle(color: AppColors.deep, fontWeight: FontWeight.w600),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        showCheckmark: false,
+      ),
+      dividerTheme: const DividerThemeData(color: AppColors.line, thickness: 1, space: 0),
+      listTileTheme: const ListTileThemeData(
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        minLeadingWidth: 44,
+        horizontalTitleGap: 12,
+      ),
     );
   }
 }
