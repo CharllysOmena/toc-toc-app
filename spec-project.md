@@ -80,11 +80,13 @@
   - Se **não registrado e dentro da janela** → abrir tela de câmera (permissão pedida no momento do uso, com justificativa pt-BR) com **preview real**, overlay do viewfinder e botão **Registrar** (tira foto).
   - Se **fora da janela/dia** → tela **Indisponível** (ícone de relógio + motivo + `windowLabel` e botão Voltar).
 - Nesta fase, a foto é capturada e o registro é marcado como confirmado (placeholder da IA); a interface `CheckAiService` já isola a futura inferência.
+- Se a IA **não detectar** o objeto monitorado, o item entra no estado **Item faltando**, com as ações **Tentar novamente** e **Confirmar manualmente**. A confirmação manual respeita a mesma janela/dia de RF03 e registra o dia como confirmado, sinalizando que a confirmação foi manual.
 
 ### RF04 — Feedback de registro
 
-- Se registrado com sucesso: **Confirmado** com horário do registro + `StreakBanner`.
-- Quando a IA entrar: se o objeto monitorado não for detectado → estado **Item faltando** (banner `alertBg`, lista de status), já existente em `check_page.dart`.
+- Se registrado com sucesso pela IA: **Confirmado** com horário do registro + `StreakBanner` "Registrado com sucesso".
+- Se o objeto monitorado não for detectado → estado **Item faltando** (banner `alertBg`, lista de status), já existente em `check_page.dart`, com opção de **Confirmar manualmente**.
+- Se confirmado manualmente: **Confirmado** com carimbo de horário + `StreakBanner` "Confirmado manualmente"; o dia aparece com marca de edição no **Histórico** (`HistoryEntry.manual`).
 - A tela de sucesso não oferece botão proeminente de "registrar novamente" (princípio da confirmação definitiva).
 
 ### RF05 — Histórico por item
@@ -141,7 +143,7 @@
 
 - Itens: `toc_checklist_items` → `List<ChecklistItem>` JSON (`id`, `title`, `objectId`, `time: DayTime`, `weekDays`, `createdAt`, `registeredAt`)
 - Catálogo de objetos: `MonitoredObject` (`id/label/emoji`) — `MonitoredObjects.all` em `domain` (puro Dart)
-- Histórico por item: `toc_history_<itemId>` → `List<HistoryEntry>`
+- Histórico por item: `toc_history_<itemId>` → `List<HistoryEntry>` (`date`, `confirmed`, `confirmedAt`, `photoPath`, `manual`)
 - Flag de onboarding: `toc_welcome_seen: bool`
 
 > Arquitetura em camadas segue `AGENTS.md`: `domain/` puro, `data/` implementa contratos, `presenter/` consome via BLoC, `GetIt` apenas no `app_module.dart`, modelos com `freezed`.

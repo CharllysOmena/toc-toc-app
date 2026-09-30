@@ -11,5 +11,6 @@ abstract class CheckResult with _$CheckResult {
     required bool detected,
     required DateTime timestamp,
     String? photoPath,
+    @Default(false) bool manual,
   }) = _CheckResult;
 }

@@ -11,11 +11,20 @@ import 'check_event.dart';
 import 'check_state.dart';
 
 class CheckBloc extends Bloc<CheckEvent, CheckState> {
-  CheckBloc(this._checkRepository, this._historyRepository, this._checklistRepository, this._photoStorage, this._itemId) : super(const CheckState.loading()) {
-    on<CheckEvent>((event, emit) => event.when(
-          started: () => _onStarted(emit),
-          captureRequested: (photoPath) => _onCaptureRequested(photoPath, emit),
-        ));
+  CheckBloc(
+    this._checkRepository,
+    this._historyRepository,
+    this._checklistRepository,
+    this._photoStorage,
+    this._itemId,
+  ) : super(const CheckState.loading()) {
+    on<CheckEvent>(
+      (event, emit) => event.when(
+        started: () => _onStarted(emit),
+        captureRequested: (photoPath) => _onCaptureRequested(photoPath, emit),
+        manualConfirmed: () => _onManualConfirmed(emit),
+      ),
+    );
   }
 
   final CheckRepository _checkRepository;
@@ -33,18 +42,31 @@ class CheckBloc extends Bloc<CheckEvent, CheckState> {
         return;
       }
       if (item.isRegisteredToday(DateTime.now())) {
-        final history = await _historyRepository.getHistory(checklistId: _itemId);
+        final history = await _historyRepository.getHistory(
+          checklistId: _itemId,
+        );
         final today = DateTime.now();
-        final todayEntry = history.where((e) => e.date.year == today.year && e.date.month == today.month && e.date.day == today.day).toList();
-        final photoPath = todayEntry.isNotEmpty ? todayEntry.last.photoPath : null;
-        emit(CheckState.confirmed(
-          result: CheckResult(
-            item: item,
-            detected: true,
-            timestamp: item.registeredAt ?? today,
-            photoPath: photoPath,
+        final todayEntry = history
+            .where(
+              (e) =>
+                  e.date.year == today.year &&
+                  e.date.month == today.month &&
+                  e.date.day == today.day,
+            )
+            .toList();
+        final photoPath = todayEntry.isNotEmpty
+            ? todayEntry.last.photoPath
+            : null;
+        emit(
+          CheckState.confirmed(
+            result: CheckResult(
+              item: item,
+              detected: true,
+              timestamp: item.registeredAt ?? today,
+              photoPath: photoPath,
+            ),
           ),
-        ));
+        );
         return;
       }
       final now = DateTime.now();
@@ -59,7 +81,10 @@ class CheckBloc extends Bloc<CheckEvent, CheckState> {
     }
   }
 
-  Future<void> _onCaptureRequested(String? photoPath, Emitter<CheckState> emit) async {
+  Future<void> _onCaptureRequested(
+    String? photoPath,
+    Emitter<CheckState> emit,
+  ) async {
     final current = state;
     ChecklistItem? item;
     await current.maybeMap(
@@ -84,18 +109,67 @@ class CheckBloc extends Bloc<CheckEvent, CheckState> {
       if (photoPath != null) {
         savedPath = await _photoStorage.save(photoPath, _itemId);
       }
-      final result = await _checkRepository.performCheck(_itemId, photoPath: savedPath);
+      final result = await _checkRepository.performCheck(
+        _itemId,
+        photoPath: savedPath,
+      );
       final resultWithPhoto = result.copyWith(photoPath: savedPath);
       if (result.detected) {
-        if (kDebugMode) debugPrint('[Check] detectado=true -> registrando item $_itemId');
+        if (kDebugMode) {
+          debugPrint('[Check] detectado=true -> registrando item $_itemId');
+        }
         await _checklistRepository.markRegistered(_itemId, DateTime.now());
-        await _historyRepository.addToday(checklistId: _itemId, confirmed: true, photoPath: savedPath);
+        await _historyRepository.addToday(
+          checklistId: _itemId,
+          confirmed: true,
+          photoPath: savedPath,
+        );
         emit(CheckState.confirmed(result: resultWithPhoto));
       } else {
-        if (kDebugMode) debugPrint('[Check] detectado=false -> NÃO registra item $_itemId (motivo no log [CheckAI])');
-        if (savedPath != null) await _photoStorage.delete(savedPath);
+        if (kDebugMode) {
+          debugPrint(
+            '[Check] detectado=false -> aguardando confirmação manual item $_itemId (motivo no log [CheckAI])',
+          );
+        }
         emit(CheckState.missing(result: resultWithPhoto));
       }
+    } catch (e) {
+      emit(CheckState.error(message: e.toString()));
+    }
+  }
+
+  Future<void> _onManualConfirmed(Emitter<CheckState> emit) async {
+    CheckResult? pending;
+    await state.maybeMap(
+      missing: (s) async => pending = s.result,
+      orElse: () async {},
+    );
+    if (pending == null) {
+      emit(const CheckState.error(message: 'Nenhuma conferência pendente'));
+      return;
+    }
+
+    final result = pending!;
+    final reason = result.item.registerBlockReason(DateTime.now());
+    if (reason != null) {
+      emit(CheckState.unavailable(item: result.item, message: reason));
+      return;
+    }
+
+    try {
+      emit(CheckState.processing(item: result.item));
+      await _checklistRepository.markRegistered(_itemId, DateTime.now());
+      await _historyRepository.addToday(
+        checklistId: _itemId,
+        confirmed: true,
+        photoPath: result.photoPath,
+        manual: true,
+      );
+      emit(
+        CheckState.confirmed(
+          result: result.copyWith(detected: true, manual: true),
+        ),
+      );
     } catch (e) {
       emit(CheckState.error(message: e.toString()));
     }

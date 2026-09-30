@@ -5,5 +5,7 @@ part 'check_event.freezed.dart';
 @freezed
 abstract class CheckEvent with _$CheckEvent {
   const factory CheckEvent.started() = _Started;
-  const factory CheckEvent.captureRequested(String? photoPath) = _CaptureRequested;
+  const factory CheckEvent.captureRequested(String? photoPath) =
+      _CaptureRequested;
+  const factory CheckEvent.manualConfirmed() = _ManualConfirmed;
 }

@@ -63,7 +63,11 @@ class _CheckPageState extends State<CheckPage> {
         backgroundColor: AppColors.panel,
         foregroundColor: AppColors.ink,
         iconTheme: const IconThemeData(color: AppColors.ink, size: 24),
-        titleTextStyle: const TextStyle(color: AppColors.ink, fontSize: 17, fontWeight: FontWeight.w700),
+        titleTextStyle: const TextStyle(
+          color: AppColors.ink,
+          fontSize: 17,
+          fontWeight: FontWeight.w700,
+        ),
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -74,7 +78,9 @@ class _CheckPageState extends State<CheckPage> {
       body: BlocBuilder<CheckBloc, CheckState>(
         builder: (context, state) {
           return state.when(
-            loading: () => const Center(child: CircularProgressIndicator(color: AppColors.confirm)),
+            loading: () => const Center(
+              child: CircularProgressIndicator(color: AppColors.confirm),
+            ),
             ready: (item) {
               final object = MonitoredObjects.byId(item.objectId);
               return Column(
@@ -84,9 +90,22 @@ class _CheckPageState extends State<CheckPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(item.title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16, color: AppColors.ink)),
+                        Text(
+                          item.title,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 16,
+                            color: AppColors.ink,
+                          ),
+                        ),
                         const SizedBox(height: 4),
-                        Text('${object.emoji} ${object.label} • ${item.time.format()}', style: const TextStyle(color: AppColors.inkSoft, fontSize: 12)),
+                        Text(
+                          '${object.emoji} ${object.label} • ${item.time.format()}',
+                          style: const TextStyle(
+                            color: AppColors.inkSoft,
+                            fontSize: 12,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -98,10 +117,17 @@ class _CheckPageState extends State<CheckPage> {
                         borderRadius: BorderRadius.circular(16),
                         child: Stack(
                           children: [
-                            Positioned.fill(child: _cameraInitialized ? _cameraService.buildPreview() : Container(color: const Color(0xFFE4E7DD))),
+                            Positioned.fill(
+                              child: _cameraInitialized
+                                  ? _cameraService.buildPreview()
+                                  : Container(color: const Color(0xFFE4E7DD)),
+                            ),
                             Positioned.fill(
                               child: Container(
-                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), border: Border.all(color: AppColors.line)),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(color: AppColors.line),
+                                ),
                               ),
                             ),
                           ],
@@ -118,7 +144,9 @@ class _CheckPageState extends State<CheckPage> {
                           // ignore: discarded_futures
                           final photo = await _cameraService.takePicture();
                           if (context.mounted) {
-                            context.read<CheckBloc>().add(CheckEvent.captureRequested(photo?.path));
+                            context.read<CheckBloc>().add(
+                              CheckEvent.captureRequested(photo?.path),
+                            );
                           }
                         },
                       ),
@@ -127,20 +155,29 @@ class _CheckPageState extends State<CheckPage> {
                 ],
               );
             },
-            processing: (item) => const Center(child: CircularProgressIndicator(color: AppColors.confirm)),
+            processing: (item) => const Center(
+              child: CircularProgressIndicator(color: AppColors.confirm),
+            ),
             confirmed: (result) {
               final time = DateFormat('HH:mm').format(result.timestamp);
-              final hasPhoto = result.photoPath != null && File(result.photoPath!).existsSync();
+              final hasPhoto =
+                  result.photoPath != null &&
+                  File(result.photoPath!).existsSync();
+              final stampLabel = result.manual
+                  ? '$time · ${result.item.title} confirmado manualmente'
+                  : '$time · ${result.item.title} registrado';
               return Column(
                 children: [
                   Expanded(
-                    child: Center(
-                      child: ConfirmStamp(timeLabel: '$time · ${result.item.title} registrado'),
-                    ),
+                    child: Center(child: ConfirmStamp(timeLabel: stampLabel)),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24),
-                    child: StreakBanner(text: 'Registrado com sucesso'),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: StreakBanner(
+                      text: result.manual
+                          ? 'Confirmado manualmente'
+                          : 'Registrado com sucesso',
+                    ),
                   ),
                   if (hasPhoto)
                     Padding(
@@ -155,7 +192,10 @@ class _CheckPageState extends State<CheckPage> {
                               builder: (context) => Dialog(
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(12),
-                                  child: Image.file(File(result.photoPath!), fit: BoxFit.cover),
+                                  child: Image.file(
+                                    File(result.photoPath!),
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               ),
                             );
@@ -170,7 +210,8 @@ class _CheckPageState extends State<CheckPage> {
                       padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
                       child: AppGhostButton(
                         label: 'Ver histórico',
-                        onPressed: () => context.go('/history/${result.item.id}'),
+                        onPressed: () =>
+                            context.go('/history/${result.item.id}'),
                       ),
                     ),
                   ),
@@ -186,9 +227,22 @@ class _CheckPageState extends State<CheckPage> {
                     padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
                     child: Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                      decoration: BoxDecoration(color: AppColors.alertBg, borderRadius: BorderRadius.circular(14)),
-                      child: Text('${object.label} não detectado', style: const TextStyle(color: AppColors.alert, fontWeight: FontWeight.w600, fontSize: 14)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.alertBg,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Text(
+                        '${object.label} não detectado',
+                        style: const TextStyle(
+                          color: AppColors.alert,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
                     ),
                   ),
                   Expanded(
@@ -196,9 +250,21 @@ class _CheckPageState extends State<CheckPage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('${object.emoji} ${object.label}', style: const TextStyle(fontSize: 32)),
+                          Text(
+                            '${object.emoji} ${object.label}',
+                            style: const TextStyle(fontSize: 32),
+                          ),
                           const SizedBox(height: 8),
-                          Text(result.item.title, style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.ink)),
+                          Text(
+                            result.item.title,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.ink,
+                            ),
+                          ),
+                          const AppCtaSub(
+                            text: 'A IA não encontrou o item na foto. Se ele está aí, você pode confirmar manualmente.',
+                          ),
                         ],
                       ),
                     ),
@@ -206,9 +272,22 @@ class _CheckPageState extends State<CheckPage> {
                   SafeArea(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
-                      child: AppSecondaryButton(
-                        label: 'Tentar novamente',
-                        onPressed: () => context.read<CheckBloc>().add(const CheckEvent.started()),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          AppSecondaryButton(
+                            label: 'Tentar novamente',
+                            onPressed: () => context.read<CheckBloc>().add(
+                              const CheckEvent.started(),
+                            ),
+                          ),
+                          AppGhostButton(
+                            label: 'Confirmar manualmente',
+                            onPressed: () => context.read<CheckBloc>().add(
+                              const CheckEvent.manualConfirmed(),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -221,15 +300,39 @@ class _CheckPageState extends State<CheckPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.schedule, color: AppColors.inkSoft, size: 48),
+                    const Icon(
+                      Icons.schedule,
+                      color: AppColors.inkSoft,
+                      size: 48,
+                    ),
                     const SizedBox(height: 12),
-                    Text(item.title, style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.ink)),
+                    Text(
+                      item.title,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.ink,
+                      ),
+                    ),
                     const SizedBox(height: 8),
-                    Text(message, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.inkSoft)),
+                    Text(
+                      message,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: AppColors.inkSoft),
+                    ),
                     const SizedBox(height: 4),
-                    Text(item.windowLabel(), textAlign: TextAlign.center, style: const TextStyle(color: AppColors.inkSoft, fontSize: 12)),
+                    Text(
+                      item.windowLabel(),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: AppColors.inkSoft,
+                        fontSize: 12,
+                      ),
+                    ),
                     const SizedBox(height: 16),
-                    AppSecondaryButton(label: 'Voltar', onPressed: () => context.go('/checklist')),
+                    AppSecondaryButton(
+                      label: 'Voltar',
+                      onPressed: () => context.go('/checklist'),
+                    ),
                   ],
                 ),
               ),
@@ -240,7 +343,11 @@ class _CheckPageState extends State<CheckPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error_outline, color: AppColors.alert, size: 48),
+                    const Icon(
+                      Icons.error_outline,
+                      color: AppColors.alert,
+                      size: 48,
+                    ),
                     const SizedBox(height: 12),
                     Text(message, textAlign: TextAlign.center),
                   ],

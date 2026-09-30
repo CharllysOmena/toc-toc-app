@@ -10,6 +10,7 @@ abstract class HistoryEntry with _$HistoryEntry {
     required bool confirmed,
     DateTime? confirmedAt,
     String? photoPath,
+    @Default(false) bool manual,
   }) = _HistoryEntry;
 
   factory HistoryEntry.fromJson(Map<String, dynamic> json) =>

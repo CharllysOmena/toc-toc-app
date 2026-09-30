@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CheckResult {
 
- ChecklistItem get item; bool get detected; DateTime get timestamp; String? get photoPath;
+ ChecklistItem get item; bool get detected; DateTime get timestamp; String? get photoPath; bool get manual;
 /// Create a copy of CheckResult
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $CheckResultCopyWith<CheckResult> get copyWith => _$CheckResultCopyWithImpl<Chec
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CheckResult&&(identical(other.item, item) || other.item == item)&&(identical(other.detected, detected) || other.detected == detected)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp)&&(identical(other.photoPath, photoPath) || other.photoPath == photoPath));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CheckResult&&(identical(other.item, item) || other.item == item)&&(identical(other.detected, detected) || other.detected == detected)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp)&&(identical(other.photoPath, photoPath) || other.photoPath == photoPath)&&(identical(other.manual, manual) || other.manual == manual));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,item,detected,timestamp,photoPath);
+int get hashCode => Object.hash(runtimeType,item,detected,timestamp,photoPath,manual);
 
 @override
 String toString() {
-  return 'CheckResult(item: $item, detected: $detected, timestamp: $timestamp, photoPath: $photoPath)';
+  return 'CheckResult(item: $item, detected: $detected, timestamp: $timestamp, photoPath: $photoPath, manual: $manual)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $CheckResultCopyWith<$Res>  {
   factory $CheckResultCopyWith(CheckResult value, $Res Function(CheckResult) _then) = _$CheckResultCopyWithImpl;
 @useResult
 $Res call({
- ChecklistItem item, bool detected, DateTime timestamp, String? photoPath
+ ChecklistItem item, bool detected, DateTime timestamp, String? photoPath, bool manual
 });
 
 
@@ -62,13 +62,14 @@ class _$CheckResultCopyWithImpl<$Res>
 
 /// Create a copy of CheckResult
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? item = null,Object? detected = null,Object? timestamp = null,Object? photoPath = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? item = null,Object? detected = null,Object? timestamp = null,Object? photoPath = freezed,Object? manual = null,}) {
   return _then(_self.copyWith(
 item: null == item ? _self.item : item // ignore: cast_nullable_to_non_nullable
 as ChecklistItem,detected: null == detected ? _self.detected : detected // ignore: cast_nullable_to_non_nullable
 as bool,timestamp: null == timestamp ? _self.timestamp : timestamp // ignore: cast_nullable_to_non_nullable
 as DateTime,photoPath: freezed == photoPath ? _self.photoPath : photoPath // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,manual: null == manual ? _self.manual : manual // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 /// Create a copy of CheckResult
@@ -162,10 +163,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ChecklistItem item,  bool detected,  DateTime timestamp,  String? photoPath)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ChecklistItem item,  bool detected,  DateTime timestamp,  String? photoPath,  bool manual)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CheckResult() when $default != null:
-return $default(_that.item,_that.detected,_that.timestamp,_that.photoPath);case _:
+return $default(_that.item,_that.detected,_that.timestamp,_that.photoPath,_that.manual);case _:
   return orElse();
 
 }
@@ -183,10 +184,10 @@ return $default(_that.item,_that.detected,_that.timestamp,_that.photoPath);case 
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ChecklistItem item,  bool detected,  DateTime timestamp,  String? photoPath)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ChecklistItem item,  bool detected,  DateTime timestamp,  String? photoPath,  bool manual)  $default,) {final _that = this;
 switch (_that) {
 case _CheckResult():
-return $default(_that.item,_that.detected,_that.timestamp,_that.photoPath);case _:
+return $default(_that.item,_that.detected,_that.timestamp,_that.photoPath,_that.manual);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -203,10 +204,10 @@ return $default(_that.item,_that.detected,_that.timestamp,_that.photoPath);case 
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ChecklistItem item,  bool detected,  DateTime timestamp,  String? photoPath)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ChecklistItem item,  bool detected,  DateTime timestamp,  String? photoPath,  bool manual)?  $default,) {final _that = this;
 switch (_that) {
 case _CheckResult() when $default != null:
-return $default(_that.item,_that.detected,_that.timestamp,_that.photoPath);case _:
+return $default(_that.item,_that.detected,_that.timestamp,_that.photoPath,_that.manual);case _:
   return null;
 
 }
@@ -218,13 +219,14 @@ return $default(_that.item,_that.detected,_that.timestamp,_that.photoPath);case 
 
 
 class _CheckResult implements CheckResult {
-  const _CheckResult({required this.item, required this.detected, required this.timestamp, this.photoPath});
+  const _CheckResult({required this.item, required this.detected, required this.timestamp, this.photoPath, this.manual = false});
   
 
 @override final  ChecklistItem item;
 @override final  bool detected;
 @override final  DateTime timestamp;
 @override final  String? photoPath;
+@override@JsonKey() final  bool manual;
 
 /// Create a copy of CheckResult
 /// with the given fields replaced by the non-null parameter values.
@@ -236,16 +238,16 @@ _$CheckResultCopyWith<_CheckResult> get copyWith => __$CheckResultCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CheckResult&&(identical(other.item, item) || other.item == item)&&(identical(other.detected, detected) || other.detected == detected)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp)&&(identical(other.photoPath, photoPath) || other.photoPath == photoPath));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CheckResult&&(identical(other.item, item) || other.item == item)&&(identical(other.detected, detected) || other.detected == detected)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp)&&(identical(other.photoPath, photoPath) || other.photoPath == photoPath)&&(identical(other.manual, manual) || other.manual == manual));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,item,detected,timestamp,photoPath);
+int get hashCode => Object.hash(runtimeType,item,detected,timestamp,photoPath,manual);
 
 @override
 String toString() {
-  return 'CheckResult(item: $item, detected: $detected, timestamp: $timestamp, photoPath: $photoPath)';
+  return 'CheckResult(item: $item, detected: $detected, timestamp: $timestamp, photoPath: $photoPath, manual: $manual)';
 }
 
 
@@ -256,7 +258,7 @@ abstract mixin class _$CheckResultCopyWith<$Res> implements $CheckResultCopyWith
   factory _$CheckResultCopyWith(_CheckResult value, $Res Function(_CheckResult) _then) = __$CheckResultCopyWithImpl;
 @override @useResult
 $Res call({
- ChecklistItem item, bool detected, DateTime timestamp, String? photoPath
+ ChecklistItem item, bool detected, DateTime timestamp, String? photoPath, bool manual
 });
 
 
@@ -273,13 +275,14 @@ class __$CheckResultCopyWithImpl<$Res>
 
 /// Create a copy of CheckResult
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? item = null,Object? detected = null,Object? timestamp = null,Object? photoPath = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? item = null,Object? detected = null,Object? timestamp = null,Object? photoPath = freezed,Object? manual = null,}) {
   return _then(_CheckResult(
 item: null == item ? _self.item : item // ignore: cast_nullable_to_non_nullable
 as ChecklistItem,detected: null == detected ? _self.detected : detected // ignore: cast_nullable_to_non_nullable
 as bool,timestamp: null == timestamp ? _self.timestamp : timestamp // ignore: cast_nullable_to_non_nullable
 as DateTime,photoPath: freezed == photoPath ? _self.photoPath : photoPath // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,manual: null == manual ? _self.manual : manual // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

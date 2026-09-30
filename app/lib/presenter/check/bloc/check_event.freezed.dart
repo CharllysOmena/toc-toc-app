@@ -55,12 +55,13 @@ extension CheckEventPatterns on CheckEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Started value)?  started,TResult Function( _CaptureRequested value)?  captureRequested,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Started value)?  started,TResult Function( _CaptureRequested value)?  captureRequested,TResult Function( _ManualConfirmed value)?  manualConfirmed,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Started() when started != null:
 return started(_that);case _CaptureRequested() when captureRequested != null:
-return captureRequested(_that);case _:
+return captureRequested(_that);case _ManualConfirmed() when manualConfirmed != null:
+return manualConfirmed(_that);case _:
   return orElse();
 
 }
@@ -78,12 +79,13 @@ return captureRequested(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Started value)  started,required TResult Function( _CaptureRequested value)  captureRequested,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Started value)  started,required TResult Function( _CaptureRequested value)  captureRequested,required TResult Function( _ManualConfirmed value)  manualConfirmed,}){
 final _that = this;
 switch (_that) {
 case _Started():
 return started(_that);case _CaptureRequested():
-return captureRequested(_that);case _:
+return captureRequested(_that);case _ManualConfirmed():
+return manualConfirmed(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -100,12 +102,13 @@ return captureRequested(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Started value)?  started,TResult? Function( _CaptureRequested value)?  captureRequested,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Started value)?  started,TResult? Function( _CaptureRequested value)?  captureRequested,TResult? Function( _ManualConfirmed value)?  manualConfirmed,}){
 final _that = this;
 switch (_that) {
 case _Started() when started != null:
 return started(_that);case _CaptureRequested() when captureRequested != null:
-return captureRequested(_that);case _:
+return captureRequested(_that);case _ManualConfirmed() when manualConfirmed != null:
+return manualConfirmed(_that);case _:
   return null;
 
 }
@@ -122,11 +125,12 @@ return captureRequested(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  started,TResult Function( String? photoPath)?  captureRequested,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  started,TResult Function( String? photoPath)?  captureRequested,TResult Function()?  manualConfirmed,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Started() when started != null:
 return started();case _CaptureRequested() when captureRequested != null:
-return captureRequested(_that.photoPath);case _:
+return captureRequested(_that.photoPath);case _ManualConfirmed() when manualConfirmed != null:
+return manualConfirmed();case _:
   return orElse();
 
 }
@@ -144,11 +148,12 @@ return captureRequested(_that.photoPath);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  started,required TResult Function( String? photoPath)  captureRequested,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  started,required TResult Function( String? photoPath)  captureRequested,required TResult Function()  manualConfirmed,}) {final _that = this;
 switch (_that) {
 case _Started():
 return started();case _CaptureRequested():
-return captureRequested(_that.photoPath);case _:
+return captureRequested(_that.photoPath);case _ManualConfirmed():
+return manualConfirmed();case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -165,11 +170,12 @@ return captureRequested(_that.photoPath);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  started,TResult? Function( String? photoPath)?  captureRequested,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  started,TResult? Function( String? photoPath)?  captureRequested,TResult? Function()?  manualConfirmed,}) {final _that = this;
 switch (_that) {
 case _Started() when started != null:
 return started();case _CaptureRequested() when captureRequested != null:
-return captureRequested(_that.photoPath);case _:
+return captureRequested(_that.photoPath);case _ManualConfirmed() when manualConfirmed != null:
+return manualConfirmed();case _:
   return null;
 
 }
@@ -274,5 +280,37 @@ as String?,
 
 
 }
+
+/// @nodoc
+
+
+class _ManualConfirmed implements CheckEvent {
+  const _ManualConfirmed();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ManualConfirmed);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'CheckEvent.manualConfirmed()';
+}
+
+
+}
+
+
+
 
 // dart format on
