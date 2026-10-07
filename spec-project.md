@@ -46,7 +46,7 @@
 
 ### Fora do escopo (v2+)
 
-- **Inferência por IA em tempo real** (`tflite_flutter` + modelo MobileNet embeddings) — interface `CheckAiService` já criada, implementação real entra quando houver `.tflite` em `assets/models/`; hoje o resultado é confirmado ao capturar.
+- **Inferência por IA em tempo real** (`flutter_litert` + modelo MobileNet embeddings) — interface `CheckAiService` já criada, implementação real entra quando houver `.tflite` em `assets/models/`; hoje o resultado é confirmado ao capturar.
 - Lembrete por **geofence/localização** (saiu de casa) — citado no MVP antigo, agora adiado.
 - Múltiplos locais (trabalho, carro) além de "casa".
 - Sincronização entre dispositivos / conta de usuário.
@@ -135,7 +135,7 @@
 | `flutter_local_notifications` + `timezone`/`flutter_timezone` | agendamento por horário + dias |
 | `flutter_secure_storage` | reservado para tokens futuros (não usado no fluxo de lembretes) |
 | `hive` | **substituído** por `shared_preferences` no MVP (dados JSON) |
-| `tflite_flutter` | **previsto** (não integrado; atrás de `CheckAiService`) |
+| `flutter_litert` | **previsto** (não integrado; atrás de `CheckAiService`) |
 | `get_it` + `flutter_bloc` + `go_router` | arquitetura em camadas (ver `AGENTS.md`) |
 | `google_fonts` | tipografia (`Fraunces`/`Inter`) |
 
@@ -174,7 +174,7 @@
 
 ## 8. Riscos e Pontos em Aberto
 
-- **IA integrada (YOLO-World):** inferência on-device via `tflite_flutter` com `assets/models/yoloworld.tflite` (float16, 22 classes). O modelo é sensível à escala (só detecta o objeto ocupando ~25–40% do quadro), então a checagem usa **multi-escala** `[1.0, 0.7, 0.5, 0.35]` com *early exit*, tomando o maior score da classe alvo. Limiar de confiança configurável por `--dart-define=AI_CONF_THRESHOLD` (default 0.30; IoU 0.45). Se não houver foto ou a inferência falhar, o resultado é **não detectado** (estado “Item faltando”), sem registrar o dia. Validar o limiar em devices reais para não gerar falsos negativos/positivos que aumentem ansiedade.
+- **IA integrada (YOLO-World):** inferência on-device via `flutter_litert` com `assets/models/yoloworld.tflite` (float16, 22 classes). O modelo é sensível à escala (só detecta o objeto ocupando ~25–40% do quadro), então a checagem usa **multi-escala** `[1.0, 0.7, 0.5, 0.35]` com *early exit*, tomando o maior score da classe alvo. Limiar de confiança configurável por `--dart-define=AI_CONF_THRESHOLD` (default 0.30; IoU 0.45). Se não houver foto ou a inferência falhar, o resultado é **não detectado** (estado “Item faltando”), sem registrar o dia. Validar o limiar em devices reais para não gerar falsos negativos/positivos que aumentem ansiedade.
 - **Notificações exatas e permissões:** em Android 13+ é preciso `POST_NOTIFICATIONS` e `SCHEDULE_EXACT_ALARM`; o rationale deve ser claro para não ser rejeitado em review.
 - **Câmera/permissão de status:** fluxo de negação + “abrir ajustes” com diálogo em pt-BR.
 - **Resincronia de agenda:** como as notificações são semanais (`dayOfWeekAndTime`), o app resincroniza ao abrir e ao registrar (cancela o dia se já registrado) — documentar a limitação de “uma vez por semana por dia”.

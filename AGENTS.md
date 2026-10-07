@@ -34,7 +34,7 @@ Toc Toc — App Flutter genérico scaffold para validação de arquitetura. Home
 | `path_provider` | Acesso a diretórios do sistema de arquivos |
 | `geolocator` | Permissões e captura de localização |
 | `mask_text_input_formatter` | Máscaras de campos de formulário |
-| `tflite_flutter` | Inferência on-device do modelo YOLO-World (checagem por objeto) |
+| `flutter_litert` | Inferência on-device do modelo YOLO-World (checagem por objeto) |
 | `image` | Decodificação/redimensionamento da foto antes da inferência |
 | `flutter_lints` | Conjunto de lints recomendado pelo time Flutter |
 
